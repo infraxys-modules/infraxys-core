@@ -4,7 +4,7 @@
 # @author jeroen-manders
 #
 
-BASH_EXPORTED_FUNCTION_NAMES="import_args replace_spaces";
+BASH_EXPORTED_FUNCTION_NAMES="import_args replace_spaces function_exists update_line_in_file remove_lines_in_file_that_start_with block_in_file file_contains_pattern copy_file get_ip_address get_major_os_version";
 
 function import_args() {
 	local varvalue="";
@@ -231,4 +231,109 @@ function restore_pipefail() {
         log_error "Unable to restore pipefile setting because variable 'last_pipefail' is not 'on' or 'off'.";
         exit 1;
     fi;
+}
+
+function function_exists() {
+    declare -f "$1" > /dev/null && echo true;
+}
+
+function file_contains_pattern() {
+    local function_name="file_contains_pattern" filename pattern;
+    import_args "$@";
+    check_required_argument $function_name filename;
+    check_required_argument $function_name pattern;
+    set +e;
+    grep "$pattern" "$filename" >/dev/null 2>&1;
+    if [ "$?" == "0" ]; then
+        echo "true";
+    else
+        echo "false";
+    fi;
+    set -e;
+}
+
+function update_line_in_file() {
+    local function_name="update_line_in_file" filename text new_text add_line_if_not_found="true" replace_line="true" starts_only="true";
+    import_args "$@";
+    check_required_argument $function_name filename;
+    check_required_argument $function_name text;
+    check_required_argument $function_name new_text;
+
+    if [ "$starts_only" == "false" -a "$replace_line" == "false" ]; then
+        log_error "Only replacing lines is supported when using --starts_only false, not updating lines";
+        exit 1;
+    fi;
+    local escaped_new_text=$(sed 's/[\/\.]/\\&/g' <<<"$new_text");
+    local escaped_text=$(sed 's/[\/\.]/\\&/g' <<<"$text");
+    local line_found="false";
+
+    if [ "$starts_only" == "true" ]; then
+        pattern="^$text";
+    else
+        pattern="$text";
+    fi;
+
+    if [ "$(file_contains_pattern --filename "$filename" --pattern "$pattern")" == "true" ]; then
+        if [ "$replace_line" == "true" ]; then
+            if [ "$starts_only" == "true" ]; then
+                log_debug "Replacing existing line in $filename that starts with $text.";
+                sed -i "s/^$escaped_text.*/$escaped_new_text/" $filename;
+            else
+                log_debug "Replacing existing line in $filename that contains $text.";
+                sed -i "s/.*$escaped_text.*/$escaped_new_text/" $filename;
+            fi;
+        else
+            log_debug "Adding $new_text to the line that starts with $text in $filename.";
+            sed -i "s/^$escaped_text.*/&$escaped_new_text/" $filename;
+        fi;
+
+    elif [ "$add_line_if_not_found" == "true" ]; then
+        log_debug "Line starting with $text not found; adding it";
+        echo "$new_text" >> $filename;
+    else
+        log_debug "Line starting with $text not found and argument 'add_line_if_not_found' is not 'true'. Changing nothing.";
+    fi;
+}
+
+function remove_lines_in_file_that_start_with() {
+    local function_name="remove_lines_in_file_that_start_with" filename start_text;
+    import_args "$@";
+    check_required_argument $function_name filename;
+    check_required_argument $function_name start_text;
+
+    if [ -f "$filename" ]; then
+        log_debug "Removing lines from $filename that start with $start_text.";
+        sed -i "/^$start_text/d" $filename 2>/dev/null;
+    fi;
+}
+
+function block_in_file() {
+    local function_name="block_in_file" filename block_text line_comment="#" marker_text="Infraxys block";
+    import_args "$@";
+    check_required_argument $function_name filename;
+
+    local comment_line="$line_comment $marker_text";
+    local comment_start_line="$comment_line - start";
+    local comment_end_line="$comment_line - end";
+
+    if [ -f "$filename" ]; then
+        log_info "Removing block '$comment_start_line' from $filename.";
+        # replace slashes
+        local espaced_comment_start_line="${comment_start_line/\//\/}"
+        local espaced_comment_end_line="${comment_end_line/\//\/}"
+        sed -i "/$espaced_comment_start_line/,/$espaced_comment_end_line/d" $filename 2>/dev/null;
+    fi;
+    if [ -z "$block_text" ]; then
+        log_debug "Block text is empty so not creating it.";
+    else
+        log_debug "Adding block '$comment_start_line' to $filename.";
+        echo "$comment_start_line" >> $filename;
+        echo "$block_text" >> $filename;
+        echo "$comment_end_line" >> $filename;
+    fi;
+}
+
+function trim() {
+    local result=$(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
+    echo "$result";
 }
