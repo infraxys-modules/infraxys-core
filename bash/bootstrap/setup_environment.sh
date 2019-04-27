@@ -30,7 +30,7 @@ done;
 
 import_args "$@"; # it is possible to override variables or pass arguments when executing from the command line or through the REST API
 
-cd "$MODULES_ROOT/github.com/jeroenmanders/core/master/bash/bootstrap"
+cd "$MODULES_ROOT/github.com/infraxys-modules/infraxys-core/master/bash/bootstrap"
 source ./module.sh;
 source ./ssh.sh;
 
