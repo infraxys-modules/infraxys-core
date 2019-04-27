@@ -22,7 +22,7 @@ else
 : ${INFRAXYS_ROOT:=/tmp/infraxys/run_$$}; export INFRAXYS_ROOT;
 fi;
 
-cd "$MODULES_ROOT/github.com/jeroenmanders/core/master/bash";
+cd "$MODULES_ROOT/github.com/infraxys-modules/infraxys-core/master/bash";
 
 for f in utils/*.sh; do
     source $f;
@@ -50,9 +50,6 @@ function prepare_environment() {
     export local_file_directory="$target_provisioning_root/files"; # TODO: remove variable local_file_directory and use target_files_root instead
     export target_files_root="$target_provisioning_root/files";
     export target_directory="$target_provisioning_root";
-    #initialize_module --module-directory "$MODULES_ROOT/github.com/jeroenmanders/core/master/system"
-    #initialize_module --module-directory "$MODULES_ROOT/github.com/jeroenmanders/core/master/packaging"
-    #initialize_module --module-directory "$MODULES_ROOT/github.com/jeroenmanders/core/master/python"
 
     cd "$INSTANCE_DIR";
     log_debug "Environment preparation complete";
