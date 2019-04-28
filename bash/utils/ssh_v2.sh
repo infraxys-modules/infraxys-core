@@ -109,3 +109,4 @@ function should_run_parallel() {
         echo "false";
     fi;
 }
+
