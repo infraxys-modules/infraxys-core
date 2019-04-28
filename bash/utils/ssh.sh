@@ -381,3 +381,4 @@ function create_key_file() {
 	    cat "${full_path}.pub" >> "$target_user_ssh_directory/authorized_keys";
 	fi;
 }
+
