@@ -143,7 +143,7 @@ function process_module_json() {
             [[ -z "$dependency" ]] && continue;
             local git_url="$(echo "$dependency" | jq -rc '.git_url')";
             local git_branch="$(echo "$dependency" | jq -rc '.branch')";
-            [[ "$git_url" == "null" ]] && echo "'git_url' attribute is required for dependencies." && exit 1;
+            [[ "$git_url" == "null" ]] && echo "'git_url' attribute is required for dependencies. Processing $full_path." && exit 1;
             [[ "$git_branch" == "null" ]] && git_branch="master";
 
             enable_module --git_url "$git_url" --git_branch "$git_branch";
