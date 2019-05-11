@@ -1,14 +1,20 @@
+function show_message_dialog() {
+    local function_name="show_message_dialog" height=200 width=400 is_html=false message style_name title;
+    import_args "$@";
+    check_required_arguments $function_name message;
+    show_dialog_v2 --height "$height" --width "$width" --is_html "$is_html" \
+            --message "$message" --style_name "$style_name" --title "$title";
+
+}
 
 function show_dialog_v2() {
-    local function_name="show_dialog_v2" default height=300 is_html=false message input_label style_name title translate width=450;
+    local function_name="show_dialog_v2" default height=300 width=450 is_html=false message input_label style_name title="Message";
     import_args "$@";
-    check_required_arguments $function_name title 
     echo "<FEEDBACK>";
     echo "ui interaction";
     echo "type=BUTTON_DIALOG";
     echo "width=$width";
     echo "height=$height";
-    echo "translate=$translate";
     echo "title=$title";
     if [ -n "$input_label" ]; then
         echo "string_input_label=$input_label";
