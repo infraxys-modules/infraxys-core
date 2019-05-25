@@ -57,7 +57,7 @@ function prepare_environment() {
 readonly -f prepare_environment;
 
 function source_initial_files() {
-    log_trace 'Exporting all entries called *.auto_properties for the environment, container and instance';
+    log_trace 'Exporting all entries from files called *.auto_properties for the environment, container and instance';
     for f in $INSTANCE_DIR/../../environment.auto/*.auto_properties $INSTANCE_DIR/../container.auto/*.auto_properties $INSTANCE_DIR/*.auto_properties $INSTANCE_DIR/run_overrides/*.auto_properties; do
         if [ -f "$f" ]; then # the path with *.auto_properties is returned if no files matched
             log_trace "Exporting file $f";
@@ -90,109 +90,3 @@ function source_initial_files() {
     fi;
 }
 readonly -f source_initial_files;
-
-function execute_gather_scripts() {
-    local start_dir="$(pwd)";
-    if [ "$ON_PROVISIONING_SERVER" == "false" ]; then
-        return;
-    fi;
-
-    log_debug "Executing scripts with names starting with 'prepare_execution' in all enabled modules.";
-    for git_url in "${!enabled_modules[@]}"; do
-        local git_branch="${enabled_modules["$git_url"]}";
-        run_or_source_files --directory "$(get_module_directory --git_url "$git_url" --git_branch "$git_branch")" --filename_pattern 'prepare_execution.*';
-    done;
-
-    if [ "$run_or_source_files_found" == "true" ]; then
-        log_debug "Container or environment .auto files might have changed. Retrieving and loading them again.";
-        set_all_host_ips;
-        source_initial_files;
-    fi;
-    cd "$start_dir";
-}
-readonly -f execute_gather_scripts;
-
-function set_all_host_ips() {
-    cd $INSTANCE_DIR;
-    all_target_ips="";
-    extra_sid_part="";
-    if [ ! -s "/tmp/_host_names_with_ips.tmp" ]; then
-        log_debug "No ips retrieved, so not reloading them";
-        return;
-    else
-        log_debug "Host names with ips;";
-        cat "/tmp/_host_names_with_ips.tmp";
-    fi;
-    while IFS='' read -r line || [[ -n "$line" ]]; do
-        ORG_IFS="${IFS}";
-        IFS=",";
-        words=($line)
-        IFS="$ORG_IFS";
-        local hostname="${words[0]}";
-        local private_ip_addresses="${words[1]}";
-        local ssh_hosts="${words[2]}";
-        if [ -z "$ssh_hosts" ]; then
-            ssh_hosts="$private_ip_addresses";
-        elif [ -z "$private_ip_addresses" ]; then
-            private_ip_addresses="$ssh_hosts";
-        fi;
-        if [ -n "$hop_server_container_name" ] && [ "$hostname" != "$hop_server_container_name" ]; then
-            ssh_hosts="$private_ip_addresses"; # ssh connections are done to the private ip through the hop server
-        fi;
-        if [ "$ansible_enabled" == "true" -o "$ansible_enabled" == "1" ]; then
-            #if [ -f "$ansible_execution_directory/$ansible_environment_directory/$ansible_hosts_filename" ]; then
-            if [ -f "$INFRAXYS_ROOT/ansible/ansible_host_inventory" ]; then
-                if [ "$(uname -s)" == "Darwin" ]; then
-                    sed -i '' "s/^$hostname ansible_ssh_host=\"[A-Za-z0-9.]*\" ansible_private_ip=\"[A-Za-z0-9.]*\"/$hostname ansible_ssh_host=\"$ssh_hosts\" ansible_private_ip=\"$private_ip_addresses\"/" $INFRAXYS_ROOT/ansible/ansible_host_inventory
-                else
-                    sed -i "s/^$hostname ansible_ssh_host=\"[A-Za-z0-9.]*\" ansible_private_ip=\"[A-Za-z0-9.]*\"/$hostname ansible_ssh_host=\"$ssh_hosts\" ansible_private_ip=\"$private_ip_addresses\"/" $INFRAXYS_ROOT/ansible/ansible_host_inventory
-                fi;
-            else
-                for f in "$ansible_execution_directory/$ansible_environment_directory/$ansible_hosts_filename/*"; do
-                    if [ "$(uname -s)" == "Darwin" ]; then
-                        sed -i '' "s/^$hostname ansible_ssh_host=\"[A-Za-z0-9.]*\" ansible_private_ip=\"[A-Za-z0-9.]*\"/$hostname ansible_ssh_host=\"$ssh_hosts\" ansible_private_ip=\"$private_ip_addresses\"/" $f
-                    else
-                        sed -i "s/^$hostname ansible_ssh_host=\"[A-Za-z0-9.]*\" ansible_private_ip=\"[A-Za-z0-9.]*\"/$hostname ansible_ssh_host=\"$ssh_hosts\" ansible_private_ip=\"$private_ip_addresses\"/" $f
-                    fi;
-                done;
-            fi;
-        fi;
-	if [ -d "../../$hostname" ]; then
-	        for f in $(find ../../$hostname -type f -name container.auto_properties); do
-        	    if [ "$(uname -s)" == "Darwin" ]; then
-                	sed -i '' "s/^container_ssh_host=.*/container_ssh_host=$ssh_hosts/" $f;
-	            else
-        	        sed -i "s/^container_ssh_host=.*/container_ssh_host=$ssh_hosts/" $f;
-	            fi;
-	        done;
-	fi;	
-        if [ "$hop_server_container_name" == "$hostname" ] && [ "$hop_server_container_name" != "$container_name" ]; then
-            for f in $(find ../.. -type f -name container.auto_properties); do
-                if [ "$(uname -s)" == "Darwin" ]; then
-                    sed -i '' "s/^hop_server=.*/hop_server=$ssh_hosts/" $f;
-                    sed -i '' "s/^hop_server_ssh_host=.*/hop_server_ssh_host=$ssh_hosts/" $f;
-                else
-                    sed -i "s/^hop_server=.*/hop_server=$ssh_hosts/" $f;
-                    sed -i "s/^hop_server_ssh_host=.*/hop_server_ssh_host=$ssh_hosts/" $f;
-                fi;
-            done;
-            for f in $(find ../.. -type f -name core.py); do
-                if [ "$(uname -s)" == "Darwin" ]; then
-                    sed -i '' "s/^Infraxys.hop_server=.*/Infraxys.hop_server=\"$ssh_hosts\"/" $f;
-                else
-                    sed -i "s/^Infraxys.hop_server=.*/Infraxys.hop_server=\"$ssh_hosts\"/" $f;
-                fi;
-            done;
-        fi;
-        for f in $(find ../../$hostname -maxdepth 2 -type f -name core); do
-            if [ "$(uname -s)" == "Darwin" ]; then
-                sed -i '' "s/^export primary_ip_address=.*/export primary_ip_address='$ssh_hosts';/" $f;
-                sed -i '' "s/^export target_server=.*/export target_server='$ssh_hosts';/" $f;
-            else
-                sed -i "s/^export primary_ip_address=.*/export primary_ip_address='$ssh_hosts';/" $f;
-                sed -i "s/^export target_server=.*/export target_server='$ssh_hosts';/" $f;
-            fi;
-        done;
-    done < "/tmp/_host_names_with_ips.tmp"
-}
-readonly -f set_all_host_ips;

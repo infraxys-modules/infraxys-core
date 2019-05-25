@@ -4,10 +4,7 @@
 # @author jeroen-manders
 #
 
-# usage:
-#   enable the core ansible-module: enable_module ansible
-#   enable a custom ansible-module: enable_module mycustomgroup ansible
-
+# Keep track of already enabled modules to avoid loops with circular dependencies
 declare -A enabled_modules
 
 function enable_module() {
@@ -15,12 +12,12 @@ function enable_module() {
     import_args "$@";
     check_required_arguments $function_name git_url git_branch;
 
-    already_enabled="${enabled_modules["$git_url"]}";
-    if [ -n "$already_enabled" ]; then
-        if [ "$git_branch" != "$already_enabled" ]; then
+    local already_enabled_branch="${enabled_modules["$git_url"]}";
+    if [ -n "$already_enabled_branch" ]; then
+        if [ "$git_branch" != "$already_enabled_branch" ]; then
             log_warn "#################  ATTENTION !!! ####################";
             log_warn "#################  ATTENTION !!! ####################";
-            log_warn "Request to enable branch '$git_branch' for module '$git_url', but another branch '$already_enabled' is already enabled. Not enabling this one.";
+            log_warn "Request to enable branch '$git_branch' for module '$git_url', but another branch '$already_enabled_branch' is already enabled. Not enabling this one.";
             log_warn "#####################################################";
             log_warn "#####################################################";
         fi;
@@ -31,7 +28,7 @@ function enable_module() {
     local module_dir="$(get_module_directory --git_url "$git_url" --git_branch "$git_branch")";
     if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
         if [ ! -d "$module_dir" ]; then
-            log_error "Module directory '$module_dir' doesn't exist.";
+            log_error "Module directory '$module_dir' doesn't exist. You need to add this module's branch on this provisioning server in Infraxys.";
             exit 1;
         fi;
     fi;
