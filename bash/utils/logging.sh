@@ -54,21 +54,10 @@ function log_error() {
     echo "$message" >&2;
 }
 
-function fatal_error() {
-    if [ "$#" -eq "1" ]; then
-        local message="$1"
-        local exit_code="1";
-    else
-        local exit_code="$1";
-        local message="$2";
-    fi;
-    log_fatal "$message";
-    exit $exit_code;
-}
-
 function log_fatal() {
     local message="$(log_text "FATAL" "$1")";
     echo "$message" >&2;
+    exit 1;
 }
 
 log_info_to_std_err() {
