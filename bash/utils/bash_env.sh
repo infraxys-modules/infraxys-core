@@ -101,6 +101,7 @@ function export_file() {
     while read _variable; do
         local parsed_variable=$(echo "$_variable" | tr -d ' ' | tr -d '\t')
         if [ -n "$parsed_variable" ]; then
+            echo "----- parsed variables: --$parsed_variable---";
             IFS='=' read -r varname varvalue <<< "$_variable"
             varvalue=$(echo "$varvalue" | sed -e 's/{CARRIAGE_RETURN}/\
 /g')
