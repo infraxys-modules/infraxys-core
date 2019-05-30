@@ -8,7 +8,7 @@
 declare -A enabled_modules
 
 function enable_module() {
-    local function_name="enable_module" git_url git_branch run;
+    local function_name="enable_module" git_url git_branch;
     import_args "$@";
     check_required_arguments $function_name git_url git_branch;
 
@@ -34,11 +34,6 @@ function enable_module() {
     fi;
 
     initialize_module --module-directory "$module_dir";
-
-    if [ -n "$run" ]; then
-        export target_is_localhost="$(is_localhost $container_ssh_host)";
-        start_module --git_url "$git_url" --git_branch "$git_branch" --run "$run";
-    fi;
 
     enabled_modules["$git_url"]="$git_branch";
     process_module_json --module_path "$module_dir";
@@ -193,27 +188,15 @@ function execute_module() {
 }
 readonly -f execute_module;
 
-function start_module() {
-    local function_name="start_module" git_url git_branch auto_start="true" run run_function_name run_on_target_script;
-    import_args "$@";
-    check_required_arguments $function_name git_url git_branch;
+function zzinit_default_module() {
     local run_on_target="false";
     local run_on_provisioning_server="false";
-    local full_path="$(get_module_directory --git_url "$git_url" --git_branch "$git_branch")";
-    enable_module --git_url "$git_url" --git_branch "$git_branch";
-    if [ -n "$run" ]; then
-        full_path="$full_path/$run";
-    fi;
-    run_or_source_files --directory "$full_path" --filename_pattern 'main.*';
-    if [ -n "$run_on_target_script" ]; then
-        if [ "$(files_exist --directory "$full_path" --filename_pattern "$run_on_target_script")" == "false" ]; then
-            log_error "Script $full_path/$run_on_target_script was specified for start_module, but no files exist with this pattern.";
-            exit 1;
-        fi;
+    local full_path="$(get_module_directory --git_url "$default_module_url" --git_branch "$default_module_branch")";
+
+    log_info "Initializing the default module $default_module_url:$default_module_branch.";
+
+    if [ "$(files_exist --directory "$full_path" --filename_pattern 'run_on_target.*')" == "true" ]; then
         run_on_target="true";
-    elif [ "$(files_exist --directory "$full_path" --filename_pattern 'run_on_target.*')" == "true" ]; then
-        run_on_target="true";
-        run_on_target_script='run_on_target.*';
     else
         log_debug "No files exist to run on the target";
     fi;
@@ -226,28 +209,19 @@ function start_module() {
     fi;
 
     if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
-        run_or_source_files --directory "$full_path" --filename_pattern 'run_on_provisioning_server_before.*';
+        log_debug "Running files in the default module root starting with 'run_on_provisioning_server.'.";
         run_or_source_files --directory "$full_path" --filename_pattern 'run_on_provisioning_server.*';
         if [ "$run_on_target" == "true" ]; then
             local executed_command_line="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")";
             run_this_on_target --execute_command_line "$command_line";
         fi;
-        if [ "$run_on_provisioning_server" == "true" ]; then
-            if [ -n "$run_function_name" ]; then
-                shift 3; # remove group_name, module_name and run_function_name
-                $run_function_name "$@";
-            fi;
-        fi;
     elif [ "$run_on_target" == "true" ]; then
-        if [ -n "$run_function_name" ]; then
-            shift 3; # remove group_name, module_name and run_function_name
-            run_or_source_files --directory "$full_path" --filename_pattern "$run_on_target_script" --run_function_name "$run_function_name" "$@";
-        else
-            run_or_source_files --directory "$full_path" --filename_pattern "$run_on_target_script";
-        fi;
+        log_debug "Running files in the default module root starting with 'run_on_target.'.";
+        run_or_source_files --directory "$full_path" --filename_pattern 'run_on_target.*';
     fi;
 
     if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
+        log_debug "Running files in the default module root starting with 'run_on_provisioning_server_after.'.";
         run_or_source_files --directory "$full_path" --filename_pattern 'run_on_provisioning_server_after.*';
         if [ "$run_on_target" == "true" ]; then
             log_info "Cleaning up remote server.";
@@ -257,4 +231,4 @@ function start_module() {
 
     cd "$INSTANCE_DIR";
 }
-readonly -f start_module;
+readonly -f zzinit_default_module;

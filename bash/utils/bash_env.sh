@@ -149,11 +149,13 @@ function run_or_source_files() {
     cd "$directory";
     run_or_source_files_found="false"
     if [ -n "$filename_extension" ]; then
+        log_debug "Running files with extension '$filename_extension' in '$directory'.";
         for f in $(find . -maxdepth 1 -type f -name *.$filename_extension); do
             run_or_source_files_found="true";
             run_or_source_file --filename "$f";
         done;
     else
+        log_debug "Running files with name pattern '$filename_pattern' in '$directory'.";
         for f in $(find . -maxdepth 1 -type f -name $filename_pattern); do
             run_or_source_files_found="true";
             run_or_source_file --filename "$f";
