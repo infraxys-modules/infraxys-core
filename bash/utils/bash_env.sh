@@ -101,14 +101,12 @@ function export_file() {
     while read _variable; do
         local parsed_variable=$(echo "$_variable" | tr -d ' ' | tr -d '\t')
         if [ -n "$parsed_variable" ]; then
-            echo "----- parsed variables: --$parsed_variable---";
             IFS='=' read -r varname varvalue <<< "$_variable"
             varname="$(cut -d "=" -f 1 <<< "$_variable")";
             varvalue="$(cut -d "=" -f 2- <<< "$_variable")";
             varvalue=$(echo "$varvalue" | sed -e 's/{CARRIAGE_RETURN}/\
 /g')
             export $varname="$varvalue"
-            echo "varname: $varname, varvalue: $varvalue--";
             IFS=$OLDIFS;
         fi;
     done <$l_tmp_filename
