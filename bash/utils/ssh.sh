@@ -314,7 +314,7 @@ function execute_on_target() {
 function run_this_on_target() {
     local function_name="run_this_on_target" execute_command_line;
     import_args "$@";
-    local TARGET_MODULES_ROOT="/tmp/infraxys/modules";
+    local TARGET_MODULES_ROOT="/tmp/infraxys-provisioning-server/modules";
     if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
         transfer_directory --source_directory "$INFRAXYS_ROOT/" --target_directory "$target_provisioning_root";
         if [ -n "$container_ssh_key_file" -a "$target_is_localhost" == "false" ]; then
