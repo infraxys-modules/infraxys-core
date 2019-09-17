@@ -17,7 +17,7 @@ function process_ssh_private_key_variables() {
 
         cd "$directory" > /dev/null;
         for f in *; do
-            log_info "Adding $f to ~/.ssh";
+            log_info "Copying key file $f to ~/.ssh/keys";
             cp "$f" ~/.ssh/keys;
         done;
         cd - > /dev/null;
@@ -53,4 +53,3 @@ EOF
 
 process_ssh_private_key_variables;
 generate_environment_ssh_config;
-
