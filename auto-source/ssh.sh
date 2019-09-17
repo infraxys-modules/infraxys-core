@@ -4,7 +4,7 @@ set -eo pipefail;
 
 function process_ssh_private_key_variables() {
     local directory="$INFRAXYS_ROOT/variables/SSH-PRIVATE-KEY";
-    log_info "Processing variables of type 'SSH-PRIVATE-KEY'.";
+    log_info "Processing variables of type 'SSH-PRIVATE-KEY' under $directory.";
     if [ -d "$directory" ]; then
         cd "$directory" > /dev/null;
         for f in *; do
