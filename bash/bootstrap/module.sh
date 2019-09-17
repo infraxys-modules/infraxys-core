@@ -168,7 +168,7 @@ function execute_module() {
         run_or_source_files --directory "$module_directory" --filename_pattern 'execute_on_provisioning_server*';
         if [ "$execute_on_target" == "true" ]; then
             rsync_directory --hostname $hostname --source_directory "$INFRAXYS_ROOT/" --target_directory "$target_provisioning_root";
-            local cmd="ssh -t -k -F $ssh_config_file $hostname \"cd $target_provisioning_root/environments; ./execute_remote.sh\"";
+            local cmd="ssh -t -k $hostname \"cd $target_provisioning_root/environments; ./execute_remote.sh\"";
             log_info "Executing action on target";
             eval $cmd;
         fi;

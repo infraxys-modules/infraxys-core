@@ -32,7 +32,6 @@ import_args "$@"; # it is possible to override variables or pass arguments when 
 
 cd "$MODULES_ROOT/github.com/infraxys-modules/infraxys-core/master/bash/bootstrap"
 source ./module.sh;
-source ./ssh.sh;
 
 function prepare_environment() {
     if [ "$ON_PROVISIONING_SERVER" == "true" ]; then

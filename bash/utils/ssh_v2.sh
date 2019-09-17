@@ -33,7 +33,7 @@ function execute_function_over_ssh() {
     # escape backslashes and colons
     local escaped_function_arguments="$(echo "$function_arguments" | sed 's/\\/\\\\/g' | sed 's/\:/\\\:/g')";
     local typeset_command="$(typeset -f $function_name $_export_function_names); export -f $_export_function_names; $(get_default_ssh_variables); $export_variables $function_name $escaped_function_arguments";
-    local ssh_command="ssh -k -F $ssh_config_file $hostname";
+    local ssh_command="ssh -k $hostname";
     if [ "$in_background" == "true" ]; then
         $ssh_command "$typeset_command" &
     else
@@ -57,7 +57,7 @@ function execute_command_over_ssh() {
 
     local escaped_command="$(echo "$command" | sed 's/\\/\\\\/g')";
 
-    local ssh_command="ssh -k -F $ssh_config_file $hostname \"$(get_default_ssh_variables); $escaped_command\"";
+    local ssh_command="ssh -k $hostname \"$(get_default_ssh_variables); $escaped_command\"";
     if [ "$in_background" == "true" ]; then
         eval $ssh_command &
     else
@@ -78,7 +78,7 @@ function rsync_directory() {
     check_required_arguments $function_name hostname source_directory target_directory;
     generate_environment_ssh_config;
     log_info "Synchronizing directory $source_directory to $hostname:$target_directory";
-    rsync -ah -e "ssh -k -F $ssh_config_file" "$source_directory" "$hostname:$target_directory";
+    rsync -ah -e "ssh -k " "$source_directory" "$hostname:$target_directory";
 }
 
 function copy_file_over_ssh() {
@@ -92,7 +92,7 @@ function copy_file_over_ssh() {
         execute_command_over_ssh --hostname "$hostname" --command "mkdir -p '$directory_name'";
     fi;
     log_info "Copying file $source_path to $hostname:$target_path";
-    scp -q -F $ssh_config_file "$source_path" $hostname:"$target_path";
+    scp -q "$source_path" $hostname:"$target_path";
 }
 
 function get_default_ssh_variables() {
