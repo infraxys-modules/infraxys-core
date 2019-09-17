@@ -16,4 +16,3 @@ function process_ssh_private_key_variables() {
 }
 
 process_ssh_private_key_variables;
-
