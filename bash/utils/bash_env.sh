@@ -98,6 +98,7 @@ function set_value_for_var() {
 function export_file() {
     local l_tmp_filename="$1";
     OLDIFS=$IFS;
+    log_debug "Exporting file $l_tmp_filename";
     while read _variable; do
         local parsed_variable=$(echo "$_variable" | tr -d ' ' | tr -d '\t')
         if [ -n "$parsed_variable" ]; then
@@ -106,7 +107,7 @@ function export_file() {
             varvalue="$(cut -d "=" -f 2- <<< "$_variable")";
             varvalue=$(echo "$varvalue" | sed -e 's/{CARRIAGE_RETURN}/\
 /g')
-            export $varname="$varvalue"
+            export $varname="$varvalue";
             IFS=$OLDIFS;
         fi;
     done <$l_tmp_filename

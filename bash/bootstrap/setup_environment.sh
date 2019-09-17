@@ -60,8 +60,9 @@ function source_initial_files() {
     log_trace 'Exporting all entries from files called *.auto_properties for the environment, container and instance';
     for f in $INSTANCE_DIR/../../environment.auto/*.auto_properties $INSTANCE_DIR/../container.auto/*.auto_properties $INSTANCE_DIR/*.auto_properties $INSTANCE_DIR/run_overrides/*.auto_properties; do
         if [ -f "$f" ]; then # the path with *.auto_properties is returned if no files matched
-            log_trace "Exporting file $f";
-            export_file "$f";
+            log_trace "Sourcing file $f";
+            #export_file "$f";
+            source "$f";
         fi;
     done;
 
