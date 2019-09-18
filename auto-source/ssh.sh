@@ -40,9 +40,6 @@ Host *
     PreferredAuthentications=publickey
 
 EOF
-    echo ----
-    pwd
-    echo ----
     for f in $(find . -type f -name generate_ssh_config); do
         log_info "Adding ssh configuration from $f.";
         . $f >> ~/.ssh/config;
@@ -53,8 +50,5 @@ EOF
     cat ~/.ssh/config;
 }
 
-echo ----
-pwd
-echo ----
 process_ssh_private_key_variables;
 generate_environment_ssh_config;
