@@ -19,6 +19,7 @@ function process_ssh_private_key_variables() {
         for f in *; do
             log_info "Copying key file $f to ~/.ssh/keys";
             cp "$f" ~/.ssh/keys;
+            chmod 400 "$f";
         done;
         cd - > /dev/null;
     fi;
