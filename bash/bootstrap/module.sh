@@ -106,7 +106,7 @@ function initialize_module() {
 
     if [ -f "run_on_provisioning_server.sh" ]; then
         log_debug "Running 'run_on_provisioning_server.sh'.";
-        source init.sh;
+        source run_on_provisioning_server.sh;
     fi;
 
     if [ -d "auto-source" ]; then
