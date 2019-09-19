@@ -2,6 +2,8 @@
 
 set -eo pipefail;
 
+# This code must run only after all modules are enabled because "generate_ssh_config"-scripts may depend on other modules like aws_core to retrieve dns names or IPs
+
 function process_ssh_private_key_variables() {
     local directory="$INFRAXYS_ROOT/variables/SSH-PRIVATE-KEY";
     log_info "Processing variables of type 'SSH-PRIVATE-KEY' under $directory.";

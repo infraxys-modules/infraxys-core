@@ -104,8 +104,8 @@ function initialize_module() {
     local current_working_directory="$(pwd)";
     cd "$module_directory";
 
-    if [ -f "init.sh" ]; then
-        log_debug "Running 'init.sh'.";
+    if [ -f "run_on_provisioning_server.sh" ]; then
+        log_debug "Running 'run_on_provisioning_server.sh'.";
         source init.sh;
     fi;
 
