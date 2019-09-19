@@ -60,7 +60,6 @@ function source_initial_files() {
     for f in $INSTANCE_DIR/../../environment.auto/*.auto_properties $INSTANCE_DIR/../container.auto/*.auto_properties $INSTANCE_DIR/*.auto_properties $INSTANCE_DIR/run_overrides/*.auto_properties; do
         if [ -f "$f" ]; then # the path with *.auto_properties is returned if no files matched
             log_trace "Sourcing file $f";
-            #export_file "$f";
             source "$f";
         fi;
     done;
@@ -77,16 +76,6 @@ function source_initial_files() {
             fi;
         fi;
     fi;
-    if [ -n "$container_ssh_key_file" ]; then
-        log_trace "Changing path $container_ssh_key_file to $INSTANCE_DIR/$container_ssh_key_file";
-        container_ssh_key_file="$INSTANCE_DIR/$container_ssh_key_file";
-    fi;
     set_default_ssh_options;
-    if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
-        if [ -f "$ENVIRONMENT_DIR/environment.auto/ssh_key_files.txt" ]; then
-            cd "$INFRAXYS_ROOT/environments";
-            add_ssh_keys_from_file --filename "$ENVIRONMENT_DIR/environment.auto/ssh_key_files.txt";
-        fi;
-    fi;
 }
 readonly -f source_initial_files;
