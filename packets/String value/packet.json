@@ -30,6 +30,26 @@
       "defaultValue": ""
     },
     {
+      "name": "string_value_key",
+      "caption": "Key",
+      "type": "java.lang.String",
+      "formColumn": 1,
+      "formOrder": 1300,
+      "visibility": "ALWAYS VISIBLE",
+      "writability": "ALWAYS",
+      "required": false,
+      "isPartOfKey": false,
+      "listOfValues": "",
+      "newItemsAllowed": false,
+      "parseWithVelocity": false,
+      "cloneAttribute": true,
+      "autoExport": true,
+      "inputPrompt": "",
+      "tooltip": "\u003cp\u003eEnter a value for this if other instances need to find this information based on a unique value\u003c/p\u003e\n\u003cb\u003eExample\u003c/b\u003e\u003cbr/\u003e\n\u003cp\u003eRetrieve an instance with key value \"my_state_bucket\" that lives anywhere on the current container\u003c/p\u003e\n\u003cpre\u003e\u003csource\u003e\n$container.getInstanceByAttributeValue(\"string_value_key\", \"my_state_bucket\").getAttribute(\"value\")\n\u003c/pre\u003e\u003c/source\u003e",
+      "scope": "Instance",
+      "defaultValue": ""
+    },
+    {
       "name": "value",
       "caption": "Value",
       "type": "java.lang.String",
@@ -50,7 +70,6 @@
       "defaultValue": ""
     }
   ],
-  "files": [
-  ],
+  "files": [],
   "allowedChildren": []
 }

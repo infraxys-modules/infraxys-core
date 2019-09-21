@@ -33,8 +33,6 @@ function enable_module() {
         fi;
     fi;
 
-    initialize_module --module-directory "$module_dir";
-
     enabled_modules["$git_url"]="$git_branch";
     process_module_json --module_path "$module_dir";
 }
@@ -96,29 +94,45 @@ function get_user_or_org_from_git_url() {
 }
 readonly -f get_user_or_org_from_git_url;
 
-function initialize_module() {
-    local module_directory;
-    import_args "$@";
-    check_required_arguments "initialize_module" module_directory;
-
+function modules_enabled() {
     local current_working_directory="$(pwd)";
-    cd "$module_directory";
 
-    if [ -f "run_on_provisioning_server.sh" ]; then
-        log_debug "Running 'run_on_provisioning_server.sh'.";
-        source run_on_provisioning_server.sh;
-    fi;
+    cd "$MODULES_ROOT";
+    log_info "Sourcing all module root files starting with 'init.' ordered by name.";
 
-    if [ -d "auto-source" ]; then
-        log_debug "Sourcing all files directly under 'auto-source'.";
-        for f in auto-source/*.sh; do
-            source "$f";
-        done;
-    fi;
+    #for f in $(find . -maxdepth 5 -type f -name run_on_provisioning_server\* | sort); do
+    for f in $(find . -maxdepth 5 -type f -name init.\* -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
+        dir="$(dirname "$f")";
+        f="$(basename "$f")" # remove dirname
+        log_info "Sourcing '$f' in '$dir";
+        cd "$dir";
+        source "$f";
+        cd "$MODULES_ROOT";
+    done;
+
+    log_info "Sourcing all module files directly under 'auto-source' directories, ordered by name.";
+    for f in $(find */*/*/*/auto-source/ -type f -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
+        dir="$(dirname "$f")";
+        f="$(basename "$f")" # remove dirname
+        log_info "Sourcing '$f' in '$dir";
+        cd "$dir/.."; # always run from the module root
+        source "auto-source/$f";
+        cd "$MODULES_ROOT";
+    done;
+
+    log_info "Sourcing all module root files that have a name starting with 'after_modules_enabled.'.";
+    for f in $(find . -maxdepth 5 -type f -name after_modules_enabled.\* -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
+        dir="$(dirname "$f")";
+        f="$(basename "$f")" # remove dirname
+        log_info "Sourcing '$f' in '$dir";
+        cd "$dir";
+        source "$f";
+        cd "$MODULES_ROOT";
+    done;
+
     cd "$current_working_directory";
 }
-
-readonly -f initialize_module;
+readonly -f modules_enabled;
 
 function process_module_json() {
     local function_name="process_module_json" module_path;
@@ -143,92 +157,3 @@ function process_module_json() {
     fi;
 }
 readonly -f process_module_json;
-
-function execute_module() {
-    local function_name="execute_module" git_url hostname;
-    import_args "$@";
-    check_required_arguments $function_name git_url;
-
-    local git_branch="${enabled_modules["$git_url"]}";
-    if [ -z "$git_branch" ]; then
-        log_error "Unable to determine branch in execute_module() for $git_url";
-        exit 1;
-    fi;
-    local module_directory="$(get_module_directory --git_url "$git_url" --git_branch "$git_branch")";
-    if [ "$(files_exist --directory "$module_directory" --filename_pattern 'execute_on_target*')" == "true" ]; then
-        check_required_arguments $function_name hostname;
-        local execute_on_target="true";
-        local execute_on_target_script='execute_on_target.*';
-    fi;
-
-    local current_command_line="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")";
-
-    if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
-        run_or_source_files --directory "$module_directory" --filename_pattern 'execute_on_provisioning_server_before*';
-        run_or_source_files --directory "$module_directory" --filename_pattern 'execute_on_provisioning_server*';
-        if [ "$execute_on_target" == "true" ]; then
-            rsync_directory --hostname $hostname --source_directory "$INFRAXYS_ROOT/" --target_directory "$target_provisioning_root";
-            local cmd="ssh -t -k $hostname \"cd $target_provisioning_root/environments; ./execute_remote.sh\"";
-            log_info "Executing action on target";
-            eval $cmd;
-        fi;
-    elif [ "$execute_on_target" == "true" ]; then
-        run_or_source_files --directory "$module_directory" --filename_pattern "$execute_on_target_script";
-    fi;
-
-    if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
-        run_or_source_files --directory "$module_directory" --filename_pattern 'execute_on_provisioning_server_after*';
-        if [ "$execute_on_target" == "true" ]; then
-            if [ "$SKIP_CLEANUP" != "true" ]; then
-                log_info "Cleaning up remote server because variable 'SKIP_CLEANUP' <> 'true'.";
-                execute_command_over_ssh --hostname $hostname --command "rm -Rf $target_provisioning_root";
-            fi;
-        fi;
-    fi;
-}
-readonly -f execute_module;
-
-function zzinit_default_module() {
-    local run_on_target="false";
-    local run_on_provisioning_server="false";
-    local full_path="$(get_module_directory --git_url "$default_module_url" --git_branch "$default_module_branch")";
-
-    log_info "Initializing the default module $default_module_url:$default_module_branch.";
-
-    if [ "$(files_exist --directory "$full_path" --filename_pattern 'run_on_target.*')" == "true" ]; then
-        run_on_target="true";
-    else
-        log_debug "No files exist to run on the target";
-    fi;
-    if [ "$(files_exist --directory "$full_path" --filename_pattern 'run_on_provisioning_server.*')" == "true" ]; then
-        run_on_provisioning_server="true";
-    fi;
-    if [ "$run_on_provisioning_server" == "true" ] && [ "$run_on_target" == "true" ]; then
-        log_error "Only one of 'run_on_target.*' and 'run_on_provisioning_server.sh' can exist for a run. Both are defined in $full_path";
-        exit 1;
-    fi;
-
-    if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
-        log_debug "Running files in the default module root starting with 'run_on_provisioning_server.'.";
-        run_or_source_files --directory "$full_path" --filename_pattern 'run_on_provisioning_server.*';
-        if [ "$run_on_target" == "true" ]; then
-            local executed_command_line="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")";
-            run_this_on_target --execute_command_line "$command_line";
-        fi;
-    elif [ "$run_on_target" == "true" ]; then
-        log_debug "Running files in the default module root starting with 'run_on_target.'.";
-        run_or_source_files --directory "$full_path" --filename_pattern 'run_on_target.*';
-    fi;
-
-    if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
-        log_debug "Running files in the default module root starting with 'run_on_provisioning_server_after.'.";
-        run_or_source_files --directory "$full_path" --filename_pattern 'run_on_provisioning_server_after.*';
-        if [ "$run_on_target" == "true" ]; then
-            log_info "Cleaning up remote server.";
-            execute_command_remote --command "rm -Rf $full_path";
-        fi;
-    fi;
-
-    cd "$INSTANCE_DIR";
-}
-readonly -f zzinit_default_module;
