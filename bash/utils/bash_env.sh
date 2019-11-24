@@ -30,8 +30,8 @@ function import_args() {
         	shift;
 
         	while true; do # handle spaces in variable values. Necessary for remote execution with arguments
-        	    local nextvar="$1";
         	    [[ $# -gt 0 ]] || break;
+        	    local nextvar="$1";
         	    if [[ -z "$nextvar" ]] || [[ "$nextvar" == --* ]]; then
         	        break;
         	    fi;
