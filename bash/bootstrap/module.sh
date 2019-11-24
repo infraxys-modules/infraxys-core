@@ -111,15 +111,18 @@ function modules_enabled() {
     done;
 
     log_info "Sourcing all module files directly under 'auto-source' directories, ordered by name.";
-    for f in $(find */*/*/*/auto-source/ -type f -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
-        dir="$(dirname "$f")";
-        f="$(basename "$f")" # remove dirname
-        log_info "Sourcing '$f' in '$dir";
-        cd "$dir/.."; # always run from the module root
-        source "auto-source/$f";
-        cd "$MODULES_ROOT";
-    done;
-
+    #for f in $(find */*/*/*/auto-source/ -type f -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
+    local files="$(find */*/*/*/auto-source/ -type f -printf '%f%%%p\n' 2>&1)";
+    if [ "$?" == "0" ]; then
+      for f in $(echo "$files" | sort | awk -F '%' '{print $2}'); do
+          dir="$(dirname "$f")";
+          f="$(basename "$f")" # remove dirname
+          log_info "Sourcing '$f' in '$dir";
+          cd "$dir/.."; # always run from the module root
+          source "auto-source/$f";
+          cd "$MODULES_ROOT";
+      done;
+    fi;
     log_info "Sourcing all module root files that have a name starting with 'after_modules_enabled.'.";
     for f in $(find . -maxdepth 5 -type f -name after_modules_enabled.\* -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
         dir="$(dirname "$f")";
