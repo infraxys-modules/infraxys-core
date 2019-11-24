@@ -11,7 +11,8 @@ VALIDATE_EXPORTED_FUNCTION_NAMES="check_required_argument check_required_argumen
 function check_required_argument() {
     local calling_function_name="$1";
     local argument_name="$2";
-    local argument_name2="$3";
+    local argument_name2="";
+    [[ $# -gt 2 ]] && argument_name2="$3";
     if [ -z "${!argument_name}" ]; then
         if [ -n "$argument_name2" ]; then
             if [ -z "${!argument_name2}" ]; then
@@ -29,6 +30,7 @@ function check_required_arguments() {
     local calling_function_name="$1";
     while true; do
         shift;
+        [[ $# -gt 0 ]] || break;
         local argument_name="$1";
         if [ -z "$argument_name" ]; then
             break;
