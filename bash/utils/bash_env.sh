@@ -342,3 +342,4 @@ function trim() {
     local result=$(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
     echo "$result";
 }
+

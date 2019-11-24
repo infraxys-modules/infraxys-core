@@ -26,7 +26,8 @@ function confirm_or_abort() {
 function log_text() {
     local log_level="$1";
     local log_message="$2";
-    local echo_argument="$3";
+    local echo_argument="";
+    [[ $# -gt 2 ]] && echo_argument="$3";
     local datepart=$(date +"%d-%m-%Y %H:%M:%S,%4N");
     echo $echo_argument "[$datepart] [`hostname`] [$log_level] [`whoami`] $log_message";
 }
