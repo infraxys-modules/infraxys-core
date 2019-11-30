@@ -13,7 +13,7 @@ function check_required_argument() {
     local argument_name="$2";
     local argument_name2="";
     [[ $# -gt 2 ]] && argument_name2="$3";
-    if [ -z "${!argument_name}" ]; then
+    if [ -v "${!argument_name}" ]; then
         if [ -n "$argument_name2" ]; then
             if [ -z "${!argument_name2}" ]; then
                 log_error "Argument '$argument_name' or '$argument_name2' is required for '$calling_function_name'.";
