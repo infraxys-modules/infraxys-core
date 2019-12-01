@@ -1,0 +1,39 @@
+#macro (nvlJson $valueOrNull $defaultIfNull)
+#if ($valueOrNull)$valueOrNull.replaceAll('\\','\\\\"').replaceAll('\"','\\"').replaceAll('\n',' ')#else#if($defaultIfNull)$defaultIfNull#else#end#end
+#end
+#macro (nvlJsonForNumber $valueOrNull $defaultIfNull)
+#if ($valueOrNull)$valueOrNull#else#if($defaultIfNull)$defaultIfNull#else#end#end
+#end
+#set ($allPackets = $environment.compilation.getAllPackets())
+{
+    "packets": [
+#foreach ($packet in $allPackets)
+    {
+        "dbId": $packet.id,
+        "guid": "#nvlJson($packet.guid)",
+        "name": "#nvlJson($packet.name)",
+        "packetType": "#nvlJson($packet.packetType)",
+        "attributes": [
+#foreach ($coreClassAttribute in $packet.coreClassAttributes)
+        {
+            "dbId": $coreClassAttribute.id,
+            "name": "#nvlJson($coreClassAttribute.name)",
+            "caption": "#nvlJson($coreClassAttribute.captionKey)",
+            "tooltip": "#nvlJson($coreClassAttribute.tooltip)",
+            "typeClassName": "#nvlJson($coreClassAttribute.typeClassName)",
+            "uiFieldClassName": "#nvlJson($coreClassAttribute.uiFieldClassName)",
+            "required": $coreClassAttribute.required,
+            "isKey": $coreClassAttribute.isKey,
+            "defaultValue": "#nvlJson($coreClassAttribute.defaultValue)",
+            "newItemsAllowed": $coreClassAttribute.newItemsAllowed,
+            "maxLength": #nvlJsonForNumber($coreClassAttribute.maxLength, 0),
+            "listOfValues": "#nvlJson($coreClassAttribute.listOfValues)"
+        }#if( $foreach.hasNext ), #end
+#end
+
+            ]
+    }#if( $foreach.hasNext ),#end
+#end
+
+    ]
+}

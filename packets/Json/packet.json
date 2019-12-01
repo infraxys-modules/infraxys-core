@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "label": "Json Packet Definitions",
+  "type": "",
+  "autoExpand": false,
+  "skipEveryInstanceFiles": false,
+  "limitToAllowedChildren": false,
+  "autoGenerate": false,
+  "key": "",
+  "infoHtml": "",
+  "attributes": [],
+  "files": [
+    {
+      "filename": "packets.json",
+      "includeName": "",
+      "menuCaption": "packets.json",
+      "directory": "",
+      "runsIndependent": false,
+      "runsParallel": false,
+      "runBeforeIndependentActions": false,
+      "parseWithVelocity": true,
+      "executable": false,
+      "saveWith": "CURRENT ENVIRONMENT",
+      "isInteractive": false,
+      "hideRunnerWindow": false,
+      "installPipeline": 0,
+      "deploymentPipeline": 0,
+      "removePipeline": 0,
+      "importPipeline": 0,
+      "timeoutSeconds": 3600,
+      "key": "",
+      "menuOrder": 100,
+      "menuSeparatorBefore": false,
+      "hideFromInstanceActionsMenu": false,
+      "hideFromBottomMenu": false,
+      "menuPath": ""
+    }
+  ],
+  "allowedChildren": []
+}
