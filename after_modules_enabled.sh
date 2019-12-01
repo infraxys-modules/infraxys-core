@@ -43,13 +43,15 @@ Host *
     PreferredAuthentications=publickey
 
 EOF
+    local configs_added=false;
     for f in $(find . -type f -name generate_ssh_config); do
         log_info "Adding ssh configuration from $f.";
+        local configs_added=true;
         . $f >> ~/.ssh/config;
     done;
 
     cd "$last_dir";
-    log_info "Ssh configuration file contents: ";
+    [[ "$configs_added" == "true" ]] &&  log_info "SSH configuration file contents: ";
     cat ~/.ssh/config;
 }
 

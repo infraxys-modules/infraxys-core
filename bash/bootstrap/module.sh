@@ -14,14 +14,10 @@ function enable_module() {
 
     local already_enabled_branch="${enabled_modules["$git_url"]}";
     if [ -n "$already_enabled_branch" ]; then
-        if [ "$git_branch" != "$already_enabled_branch" ]; then
-            log_warn "#################  ATTENTION !!! ####################";
-            log_warn "#################  ATTENTION !!! ####################";
-            log_warn "Request to enable branch '$git_branch' for module '$git_url', but another branch '$already_enabled_branch' is already enabled. Not enabling this one.";
-            log_warn "#####################################################";
-            log_warn "#####################################################";
+        if [ "$git_branch" == "$already_enabled_branch" ]; then
+          # ignore this module branch since it was already processed
+          return;
         fi;
-        return;
     fi;
 
     log_debug "Enabling module $git_url, branch $git_branch";
