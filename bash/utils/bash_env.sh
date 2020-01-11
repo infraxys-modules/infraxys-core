@@ -10,9 +10,11 @@ function import_args() {
 	local varvalue="";
 	local varname="";
 	local import_to_file="";
-	if [ "$1" == "import_to_file" ]; then
-	    import_to_file="$2";
-	    shift 2;
+	if [ $# -ge 2 ]; then
+	  if [ "$1" == "import_to_file" ]; then
+	      import_to_file="$2";
+	      shift 2;
+	  fi;
 	fi;
     while [[ $# > 1 ]]; do
         varname="$1";

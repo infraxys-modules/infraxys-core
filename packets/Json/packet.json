@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "label": "Json Packet Definitions",
+  "label": "%instance_label%",
   "type": "",
   "autoExpand": false,
   "skipEveryInstanceFiles": false,
@@ -8,7 +8,31 @@
   "autoGenerate": false,
   "key": "",
   "infoHtml": "",
-  "attributes": [],
+  "attributes": [
+    {
+      "name": "instance_label",
+      "caption": "Instance label",
+      "type": "java.lang.String",
+      "formColumn": 1,
+      "formOrder": 1100,
+      "visibility": "ALWAYS VISIBLE",
+      "writability": "ALWAYS",
+      "required": true,
+      "isPartOfKey": true,
+      "listOfValues": "",
+      "referenceFilter": "",
+      "referenceValueAttributeName": "",
+      "referenceChildGuidFilter": "",
+      "newItemsAllowed": false,
+      "parseWithVelocity": false,
+      "cloneAttribute": true,
+      "autoExport": true,
+      "inputPrompt": "",
+      "tooltip": "",
+      "scope": "Instance",
+      "defaultValue": "Json Packet Definitions"
+    }
+  ],
   "files": [
     {
       "filename": "packets.json",
@@ -23,10 +47,6 @@
       "saveWith": "CURRENT ENVIRONMENT",
       "isInteractive": false,
       "hideRunnerWindow": false,
-      "installPipeline": 0,
-      "deploymentPipeline": 0,
-      "removePipeline": 0,
-      "importPipeline": 0,
       "timeoutSeconds": 3600,
       "key": "",
       "menuOrder": 100,

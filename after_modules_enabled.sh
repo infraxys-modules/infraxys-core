@@ -34,7 +34,7 @@ function generate_environment_ssh_config() {
     local last_dir="$(pwd)";
     cd "$ENVIRONMENT_DIR";
 
-    cat > ~/.ssh/config << EOF
+    cat >> ~/.ssh/config << EOF
 Host *
     ServerAliveInterval 60
     StrictHostKeyChecking no
@@ -43,17 +43,36 @@ Host *
     PreferredAuthentications=publickey
 
 EOF
-    local configs_added=false;
-    for f in $(find . -type f -name generate_ssh_config); do
+    local temp_ssh_config="";
+    log_info "Adding all files in the environment with name starting with 'generate_ssh_config'.";
+    for f in $(find "$ENVIRONMENT_DIR" -type f -name generate_ssh_config*); do
         log_info "Adding ssh configuration from $f.";
-        local configs_added=true;
-        . $f >> ~/.ssh/config;
+        . $f --target_variable_name "temp_ssh_config";
+        echo "$temp_ssh_config" >> ~/.ssh/config;
+        echo "" >> ~/.ssh/config;
     done;
-
     cd "$last_dir";
-    [[ "$configs_added" == "true" ]] &&  log_info "SSH configuration file contents: ";
-    cat ~/.ssh/config;
 }
+
+function process_ssh_config_variables() {
+    local directory="$INFRAXYS_ROOT/variables/SSH-CONFIG";
+    log_info "Processing variables of type 'SSH-CONFIG' under $directory.";
+
+    echo '' >> ~/.ssh/config;
+
+    if [ -d "$directory" ]; then
+
+        cd "$directory" > /dev/null;
+        for f in *; do
+            log_info "Adding contents of file $f to ~/.ssh/config";
+            cat "$f" >> ~/.ssh/config;
+        done;
+        cd - > /dev/null;
+    fi;
+}
+
 
 process_ssh_private_key_variables;
 generate_environment_ssh_config;
+process_ssh_config_variables;
+

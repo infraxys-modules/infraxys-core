@@ -1,5 +1,5 @@
 #macro (nvlJson $valueOrNull $defaultIfNull)
-#if ($valueOrNull)$valueOrNull.replaceAll('\\','\\\\"').replaceAll('\"','\\"').replaceAll('\n',' ')#else#if($defaultIfNull)$defaultIfNull#else#end#end
+#if ($valueOrNull)$valueOrNull.replaceAll('\\','\\\\').replaceAll('\"','\\"').replaceAll('\n',' ')#else#if($defaultIfNull)$defaultIfNull#else#end#end
 #end
 #macro (nvlJsonForNumber $valueOrNull $defaultIfNull)
 #if ($valueOrNull)$valueOrNull#else#if($defaultIfNull)$defaultIfNull#else#end#end

@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "label": "SSH config generator",
+  "type": "",
+  "autoExpand": false,
+  "skipEveryInstanceFiles": false,
+  "limitToAllowedChildren": false,
+  "autoGenerate": false,
+  "key": "",
+  "infoHtml": "",
+  "attributes": [],
+  "files": [
+    {
+      "filename": "generate_ssh_config.sh",
+      "includeName": "",
+      "menuCaption": "Generate SSH config",
+      "directory": "",
+      "runsIndependent": false,
+      "runsParallel": false,
+      "runBeforeIndependentActions": false,
+      "parseWithVelocity": false,
+      "executable": true,
+      "saveWith": "CURRENT INSTANCE",
+      "isInteractive": false,
+      "hideRunnerWindow": false,
+      "installPipeline": 0,
+      "deploymentPipeline": 0,
+      "removePipeline": 0,
+      "importPipeline": 0,
+      "timeoutSeconds": 3600,
+      "key": "",
+      "menuOrder": 100,
+      "menuSeparatorBefore": false,
+      "hideFromInstanceActionsMenu": false,
+      "hideFromBottomMenu": false,
+      "menuPath": ""
+    }
+  ],
+  "allowedChildren": []
+}

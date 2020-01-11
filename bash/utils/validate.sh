@@ -13,7 +13,7 @@ function check_required_argument() {
     local argument_name="$2";
     local argument_name2="";
     [[ $# -gt 2 ]] && argument_name2="$3";
-    if [ -v "${!argument_name}" ]; then
+    if [ -z "${!argument_name}" ]; then
         if [ -n "$argument_name2" ]; then
             if [ -z "${!argument_name2}" ]; then
                 log_error "Argument '$argument_name' or '$argument_name2' is required for '$calling_function_name'.";
@@ -40,9 +40,9 @@ function check_required_arguments() {
 }
 
 function check_required_variable() {
-	local variable_name default_value or_variable_name;
+	local  function_name="check_required_variable" variable_name default_value="" or_variable_name="";
     import_args "$@";
-    check_required_arguments check_required_variable variable_name;
+    check_required_arguments "$function_name" variable_name;
     if [ -n "$or_variable_name" -a -n "$default_value" ]; then
         log_error "Arguments 'or_variable_name' and 'default_value' can't be specified at the same time. $function_name";
         exit 1;
@@ -66,9 +66,10 @@ function check_required_variable() {
 
 function check_required_variables() {
     while true; do
+        [[ $# == 0 ]] && break;
         local variable_name="$1";
         if [ -z "$variable_name" ]; then
-            break;
+            continue;
         fi;
         check_required_variable --variable_name "$variable_name";
         shift;
