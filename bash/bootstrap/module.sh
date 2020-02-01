@@ -100,7 +100,7 @@ function modules_enabled() {
     for f in $(find . -maxdepth 5 -type f -name init.\* -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
         dir="$(dirname "$f")";
         f="$(basename "$f")" # remove dirname
-        log_info "Sourcing '$f' in '$dir";
+        log_info "Sourcing '$f' in '$dir'";
         cd "$dir";
         source "$f";
         cd "$MODULES_ROOT";
@@ -114,7 +114,7 @@ function modules_enabled() {
       for f in $(echo "$files" | sort | awk -F '%' '{print $2}'); do
           dir="$(dirname "$f")";
           f="$(basename "$f")" # remove dirname
-          log_info "Sourcing '$f' in '$dir";
+          log_info "Sourcing '$f' in '$dir'";
           cd "$dir/.."; # always run from the module root
           source "auto-source/$f";
           cd "$MODULES_ROOT";
@@ -125,7 +125,7 @@ function modules_enabled() {
     for f in $(find . -maxdepth 5 -type f -name after_modules_enabled.\* -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
         dir="$(dirname "$f")";
         f="$(basename "$f")" # remove dirname
-        log_info "Sourcing '$f' in '$dir";
+        log_info "Sourcing '$f' in '$dir'";
         cd "$dir";
         source "$f";
         cd "$MODULES_ROOT";

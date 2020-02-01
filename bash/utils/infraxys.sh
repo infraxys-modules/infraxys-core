@@ -376,21 +376,21 @@ EOF
 }
 
 function has_grant() {
-    local function_name="has_grant" grant_name;
+    local function_name="has_grant" grant_name grant_guid;
     import_args "$@";
-    check_required_arguments $function_name grant_name
-    local has_rights="$(/tmp/infraxys/system/has_grant "$grant_name")";
+    check_required_arguments $function_name grant_name grant_guid
+    local has_rights="$(/tmp/infraxys/system/has_grant "$grant_guid")";
     echo "$has_rights";
 }
 readonly -f has_grant;
 
 function check_grant() {
-    local function_name="check_grant" grant_name;
+    local function_name="check_grant" grant_name grant_guid;
     import_args "$@";
-    check_required_arguments $function_name grant_name
-    local has_rights="$(/tmp/infraxys/system/has_grant "$grant_name")";
+    check_required_arguments $function_name grant_name grant_guid
+    local has_rights="$(/tmp/infraxys/system/has_grant "$grant_guid")";
     if [ "$has_rights" != "true" ]; then
-        log_error "User lacks required grant '$grant_name'.";
+        log_error "User lacks required grant '$grant_name' (guid '$grant_guid').";
         exit 1;
     fi;
 }
