@@ -49,6 +49,7 @@ EOF
         log_info "Adding ssh configuration from $f.";
         . $f --target_variable_name "temp_ssh_config";
         echo "$temp_ssh_config" >> ~/.ssh/config;
+        temp_ssh_config="";
         echo "" >> ~/.ssh/config;
     done;
     cd "$last_dir";

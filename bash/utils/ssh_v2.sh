@@ -37,6 +37,7 @@ function execute_function_over_ssh() {
     if [ "$in_background" == "true" ]; then
         $ssh_command "$typeset_command" &
     else
+      echo "executing $ssh_command $typeset_command";
         $ssh_command "$typeset_command";
     fi;
 
@@ -56,8 +57,8 @@ function execute_command_over_ssh() {
     generate_environment_ssh_config;
 
     local escaped_command="$(echo "$command" | sed 's/\\/\\\\/g')";
-
     local ssh_command="ssh -k $hostname \"$(get_default_ssh_variables); $escaped_command\"";
+
     if [ "$in_background" == "true" ]; then
         eval $ssh_command &
     else
