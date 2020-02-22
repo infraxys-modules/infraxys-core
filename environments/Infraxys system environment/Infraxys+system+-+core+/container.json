@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "description": "Infraxys core function for attribute generation and such.",
+  "name": "Infraxys system - core ",
+  "guid": "107adff2-3051-4a35-b2de-1cf6303ee14c",
+  "roles": [],
+  "instances": [
+    {
+      "guid": "guid-50424",
+      "parentGuid": "",
+      "packetGuid": "github.com\\infraxys-modules\\infraxys-system\\master\\infraxys-system-include-always",
+      "velocityName": "",
+      "instanceGroups": "",
+      "always_enable_module": "1",
+      "instance_label": " Infraxys - include in every instance files"
+    },
+    {
+      "guid": "guid-46352",
+      "parentGuid": "",
+      "packetGuid": "github.com\\infraxys-modules\\infraxys-system\\master\\infraxys-system",
+      "velocityName": "",
+      "instanceGroups": "",
+      "always_enable_module": "1",
+      "instance_label": " Infraxys - variable generators"
+    }
+  ]
+}
