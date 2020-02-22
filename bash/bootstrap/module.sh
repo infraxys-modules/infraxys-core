@@ -96,7 +96,6 @@ function modules_enabled() {
     cd "$MODULES_ROOT";
     log_info "Sourcing all module root files starting with 'init.' ordered by name.";
 
-    #for f in $(find . -maxdepth 5 -type f -name run_on_provisioning_server\* | sort); do
     for f in $(find . -maxdepth 5 -type f -name init.\* -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
         dir="$(dirname "$f")";
         f="$(basename "$f")" # remove dirname
@@ -108,7 +107,6 @@ function modules_enabled() {
 
     log_info "Sourcing all module files directly under 'auto-source' directories, ordered by name.";
 
-    #for f in $(find */*/*/*/auto-source/ -type f -printf '%f%%%p\n' | sort | awk -F '%' '{print $2}'); do
     local files="$(find */*/*/*/auto-source/ -type f -printf '%f%%%p\n' 2>&1)";
     if [ "$?" == "0" ]; then
       for f in $(echo "$files" | sort | awk -F '%' '{print $2}'); do

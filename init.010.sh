@@ -2,21 +2,23 @@
 
 set -eo pipefail;
 
-# This code must run only after all modules are enabled because "generate_ssh_config"-scripts may depend on other modules like aws_core to retrieve dns names or IPs
+# This code must run after cloud provider configuration, like connecting to AWS (which is in init.005.sh)
+
+function init_ssh() {
+    mkdir -p ~/.ssh/keys;
+    mkdir -p ~/.ssh/generated.d;
+
+    echo 'Include ~/.ssh/generated.d/*' >> ~/.ssh/config;
+}
+readonly init_ssh;
 
 function process_ssh_private_key_variables() {
     local directory="$INFRAXYS_ROOT/variables/SSH-PRIVATE-KEY";
     log_info "Processing variables of type 'SSH-PRIVATE-KEY' under $directory.";
 
-    mkdir -p ~/.ssh/keys;
-    mkdir -p ~/.ssh/generated.d;
-
-    echo 'Include ~/.ssh/generated.d/*' >> ~/.ssh/config;
-
     chmod -R 700 ~/.ssh;
 
     if [ -d "$directory" ]; then
-
         cd "$directory" > /dev/null;
         for f in *; do
             log_info "Copying key file $f to ~/.ssh/keys";
@@ -44,13 +46,11 @@ Host *
 
 EOF
     local temp_ssh_config="";
-    log_info "Adding all files in the environment with name starting with 'generate_ssh_config'.";
-    for f in $(find "$ENVIRONMENT_DIR" -type f -name generate_ssh_config*); do
-        log_info "Adding ssh configuration from $f.";
-        . $f --target_variable_name "temp_ssh_config";
-        echo "$temp_ssh_config" >> ~/.ssh/config;
-        temp_ssh_config="";
-        echo "" >> ~/.ssh/config;
+    log_info "Running all packet files in this environment with name starting with 'configure_ssh'. These files should write ssh-config to '~/.ssh/generated.d/<vpc name>', for example.";
+    for f in $(find "$ENVIRONMENT_DIR" -type f -name configure_ssh*); do
+        log_info "Executing $f.";
+        $f;
+        echo "" >> ~/.ssh/config; # ensure the next output starts on a new line
     done;
     cd "$last_dir";
 }
@@ -72,7 +72,7 @@ function process_ssh_config_variables() {
     fi;
 }
 
-
+init_ssh;
 process_ssh_private_key_variables;
 generate_environment_ssh_config;
 process_ssh_config_variables;
