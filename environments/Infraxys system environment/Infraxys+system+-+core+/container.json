@@ -8,7 +8,7 @@
     {
       "guid": "guid-50424",
       "parentGuid": "",
-      "packetGuid": "github.com\\infraxys-modules\\infraxys-system\\master\\infraxys-system-include-always",
+      "packetGuid": "github.com\\infraxys-modules\\infraxys-core\\master\\infraxys-system-include-always",
       "velocityName": "",
       "instanceGroups": "",
       "always_enable_module": "1",
@@ -17,7 +17,7 @@
     {
       "guid": "guid-46352",
       "parentGuid": "",
-      "packetGuid": "github.com\\infraxys-modules\\infraxys-system\\master\\infraxys-system",
+      "packetGuid": "github.com\\infraxys-modules\\infraxys-core\\master\\infraxys-system",
       "velocityName": "",
       "instanceGroups": "",
       "always_enable_module": "1",

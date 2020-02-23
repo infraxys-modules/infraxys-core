@@ -1,0 +1,10 @@
+export environment_db_id=$environment.id;
+export environment_name="$environment.name";
+
+#set ($environmentVars = $environment.getEnvironmentVars())
+#foreach ($environmentVar in $environmentVars)
+export $environmentVar.attributeName="$(cat << EOF
+$environmentVar.attributeValue
+EOF
+)";
+#end
