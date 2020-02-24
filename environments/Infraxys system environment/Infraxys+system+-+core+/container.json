@@ -7,7 +7,6 @@
   "instances": [
     {
       "guid": "guid-50424",
-      "parentGuid": "",
       "packetGuid": "github.com\\infraxys-modules\\infraxys-core\\master\\infraxys-system-include-always",
       "velocityName": "",
       "instanceGroups": "",
@@ -16,7 +15,6 @@
     },
     {
       "guid": "guid-46352",
-      "parentGuid": "",
       "packetGuid": "github.com\\infraxys-modules\\infraxys-core\\master\\infraxys-system",
       "velocityName": "",
       "instanceGroups": "",
