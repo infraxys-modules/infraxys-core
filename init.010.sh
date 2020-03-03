@@ -72,6 +72,24 @@ function process_ssh_config_variables() {
     fi;
 }
 
+# call this function only when explicitly needed
+# Terraform, for example, needs this to retrieve modules over https that are in GitHub Enterprise
+#    and/or private GitHub repositories
+function process_netrc_variables() {
+    local directory="$INFRAXYS_ROOT/variables/NETRC";
+
+    if [ -d "$directory" ]; then
+        cd "$directory" > /dev/null;
+        for f in *; do
+            log_info "Copying contents of $f to ~/.netrc";
+            cat "$f" > ~/.netrc;
+        done;
+        chmod 400 ~/.netrc
+        cd - > /dev/null;
+    fi;
+}
+
+
 init_ssh;
 process_ssh_private_key_variables;
 generate_environment_ssh_config;

@@ -2,13 +2,13 @@ function show_message_dialog() {
     local function_name="show_message_dialog" height=200 width=400 is_html=false message style_name title;
     import_args "$@";
     check_required_arguments $function_name message;
-    show_dialog_v2 --height "$height" --width "$width" --is_html "$is_html" \
+    show_dialog --height "$height" --width "$width" --is_html "$is_html" \
             --message "$message" --style_name "$style_name" --title "$title";
 
 }
 
-function show_dialog_v2() {
-    local function_name="show_dialog_v2" default height=300 width=450 is_html=false message input_label style_name title="Message";
+function show_dialog() {
+    local function_name="show_dialog" default height=300 width=450 is_html=false message input_label style_name title="Message";
     import_args "$@";
     echo "<FEEDBACK>";
     echo "ui interaction";
@@ -42,7 +42,7 @@ function show_dialog_v2() {
         button_caption="${BUTTONS[$button_number]}";
         if [[ "$button_caption" == *\ * ]]; then
             if [[ "$button_caption" == *\"* ]]; then
-                show_error "Button caption cannot contain a space and a double quote";
+                show_error --message "Button caption cannot contain a space and a double quote";
                 exit 1;
             fi;
         fi;
@@ -60,3 +60,42 @@ function show_dialog_v2() {
     LAST_DIALOG_RESULT="$LAST_RESULTS"; 
 }
 
+function get_user_input() {
+    BUTTONS=("Ok" "Cancel")
+    BUTTON_LOCATIONS=("LEFT" "RIGHT")
+    show_dialog "$@";
+}
+
+function ask_yes_no() {
+    BUTTONS=("Yes" "No")
+    BUTTON_LOCATIONS=("LEFT" "RIGHT")
+    show_dialog "$@"
+}
+
+function ask_yes_no_cancel() {
+    BUTTONS=("Yes" "No", "Cancel")
+    BUTTON_LOCATIONS=("LEFT" "MIDDLE" "RIGHT")
+    show_dialog "$@"
+}
+
+function ask_ok_cancel() {
+    BUTTONS=("OK" "Cancel")
+    BUTTON_LOCATIONS=("LEFT" "RIGHT")
+    show_dialog "$@"
+}
+
+function show_info() {
+    show_dialog --style_name info "$@";
+}
+
+function show_warning() {
+    show_dialog --style_name warning "$@";
+}
+
+function show_warn() {
+    show_dialog --style_name warning "$@";
+}
+
+function show_error() {
+    show_dialog --style_name error "$@";
+}
