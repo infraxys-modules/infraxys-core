@@ -346,3 +346,21 @@ function trim() {
     echo "$result";
 }
 
+function append_all_files_in_dir() {
+    local function_name="append_all_files_in_dir" directory target_file add_new_line="false";
+    import_args "$@";
+    check_required_arguments $function_name directory target_file;
+    if [ ! -d "$directory" ]; then
+        log_debug "Directory $directory doesn't exist so not appending anything to $target_file.";
+        return;
+    fi;
+    cd "$directory" > /dev/null;
+    for f in *; do
+        log_info "Adding $f";
+        cat "$f" >> $target_file;
+        if [ "$add_new_line" == "true" ]; then
+          echo "" >> $target_file;
+        fi;
+    done;
+    cd - > /dev/null;
+}
