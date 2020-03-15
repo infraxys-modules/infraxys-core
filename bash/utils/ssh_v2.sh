@@ -7,7 +7,7 @@
 
 function execute_function_over_ssh() {
     local function_name hostname in_background="false" exit_on_error="true" export_standard_functions="true" \
-        retrieve_file transfer_file create_directory="false";
+        retrieve_file retrieve_file_local_path transfer_file transfer_file_remote_path create_directory="false";
 
     local function_arguments="$@"; # this will include function_name, hostname, exit_on_error and in_background, but that's ok
     import_args "$@";
@@ -40,7 +40,9 @@ function execute_function_over_ssh() {
     local ssh_command="ssh -k $hostname";
 
     if [ -n "$transfer_file" ]; then
-      copy_file_to_host --hostname "$hostname" --source_path "$transfer_file" --target_path "$transfer_file" \
+      [ -z "$transfer_file_remote_path" ] && transfer_file_remote_path="$target_file";
+
+      copy_file_to_host --hostname "$hostname" --source_path "$transfer_file" --target_path "$transfer_file_remote_path" \
           --create_directory "$create_directory";
     fi;
     if [ "$in_background" == "true" ]; then
@@ -51,7 +53,8 @@ function execute_function_over_ssh() {
       $ssh_command "$typeset_command";
       local last_exit_code="$?";
       if [ -n "$retrieve_file" ]; then
-        copy_file_from_host --hostname "$hostname" --source_path "$retrieve_file" --target_path "$retrieve_file" \
+        [ -z "$retrieve_file_local_path" ] && retrieve_file_local_path="$retrieve_file";
+        copy_file_from_host --hostname "$hostname" --source_path "$retrieve_file" --target_path "$retrieve_file_local_path" \
             --delete_source "true";
       fi;
     fi;
