@@ -8,10 +8,8 @@ function git_clone_repository() {
 		target_directory="/tmp/$repository_$branch";
 	fi;
 	if [ -n "$github_token" ]; then
-	  log_info "Using github token $github_token"
 		local github_url="https://$github_token@$github_domain/$organization/$repository";
 	else
-	  log_info "Not using github token '$github_token'."
 		local github_url="https://$github_domain/$organization/$repository";
 	fi;
 	local clone_command="git clone -q -b $branch $github_url $target_directory";
