@@ -22,6 +22,10 @@ function process_ssh_private_key_variables() {
         cd "$directory" > /dev/null;
         for f in *; do
             log_info "Copying key file $f to ~/.ssh/keys";
+            if grep -qi "OPENSSH" "$f"; then
+              log_fatal "This is an OPENSSH private key, which is not supported. You can convert it to RSA-format using `ssh-keygen -p -N "" -m pem -f /path/to/key`.
+              Be careful, this command will overwrite the origin file.";
+            fi;
             cp "$f" ~/.ssh/keys;
         done;
         chmod 400 ~/.ssh/keys/*;

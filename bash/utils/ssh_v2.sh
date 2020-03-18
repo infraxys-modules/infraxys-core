@@ -40,7 +40,7 @@ function execute_function_over_ssh() {
     local ssh_command="ssh -k $hostname";
 
     if [ -n "$transfer_file" ]; then
-      [ -z "$transfer_file_remote_path" ] && transfer_file_remote_path="$target_file";
+      [ -z "$transfer_file_remote_path" ] && transfer_file_remote_path="$transfer_file";
 
       copy_file_to_host --hostname "$hostname" --source_path "$transfer_file" --target_path "$transfer_file_remote_path" \
           --create_directory "$create_directory";
