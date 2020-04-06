@@ -73,7 +73,7 @@ function ask_yes_no() {
 }
 
 function ask_yes_no_cancel() {
-    BUTTONS=("Yes" "No", "Cancel")
+    BUTTONS=("Yes" "No" "Cancel")
     BUTTON_LOCATIONS=("LEFT" "MIDDLE" "RIGHT")
     show_dialog "$@"
 }

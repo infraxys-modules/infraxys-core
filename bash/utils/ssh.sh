@@ -234,7 +234,7 @@ function execute_function_remote() {
             $ssh_command  -o ProxyCommand="$proxy_command" "$typeset_command" &
         else
             $ssh_command  -o ProxyCommand="$proxy_command" "$typeset_command";
-		fi;
+		    fi;
     elif [ -n "$hop_server_ssh_host" ] && [ "$hop_server_ssh_host" != "$ssh_host" ]; then
 		if [ "$in_background" == "true" ]; then
             ssh -t  $ssh_user@$ssh_host -k -o ProxyCommand="ssh -k $_default_ssh_options root@$hop_server_ssh_host -W $ssh_host:22" $_default_ssh_options \
