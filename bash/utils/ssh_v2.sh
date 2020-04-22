@@ -8,7 +8,7 @@
 function execute_function_over_ssh() {
     local function_name hostname in_background="false" exit_on_error="true" export_standard_functions="true" \
         retrieve_file retrieve_file_local_path transfer_file transfer_file_remote_path create_directory="false" \
-        override_ssh_user;
+        override_ssh_user url_encode_variables="false";
 
     local function_arguments="$@"; # this will include function_name, hostname, exit_on_error and in_background, but that's ok
     import_args "$@";
@@ -36,7 +36,7 @@ function execute_function_over_ssh() {
 	  export_variables="$(get_export_variables) $export_variables";
 
     # escape backslashes and colons
-    local escaped_function_arguments="$(echo "$function_arguments" | sed 's/\\/\\\\/g' | sed 's/\:/\\\:/g')";
+    local escaped_function_arguments="$(echo "$function_arguments" | sed 's/\\/\\\\/g' | sed 's/\:/\\\:/g' | sed 's/[(]/\\\(/g' )";
     local typeset_command="$(typeset -f $function_name $_export_function_names); export -f $_export_function_names; $(get_default_ssh_variables); $export_variables $function_name $escaped_function_arguments";
     local user_part="";
     if [ -n "$override_ssh_user" ]; then

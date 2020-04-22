@@ -1,6 +1,5 @@
 export INSTANCE_GUID="$instance.getGuid()";
 export PACKET_GUID="$instance.getPacketGuid()";
-export instance_db_id=$instance.id;
 #if ($instance.attributes)
 #foreach ($attribute in $instance.attributes)
 #if ($attribute.autoExportToScript == true)

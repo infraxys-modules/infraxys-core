@@ -84,21 +84,6 @@ $text_from_server";
     echo "";
 }
 
-function execute_infraxys_action() {
-	local function_name="execute_infraxys_action" instance_id filename;
-	import_args "$@";
-	check_required_arguments $function_name instance_id filename;
-
-	echo "<FEEDBACK>";
-	echo "ui interaction";
-	echo "type=EXECUTE_ACTION";
-	echo "instance_id=$instance_id";
-	echo "filename=$filename";
-	echo "</FEEDBACK>";
-	wait_for_feedback;
-	LAST_DIALOG_RESULT="$FEEDBACK_RESULTS";
-}
-
 function show_selection_list() {
     local function_name="show_selection_list";
         local OPTIND;

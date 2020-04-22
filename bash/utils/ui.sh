@@ -8,7 +8,8 @@ function show_message_dialog() {
 }
 
 function show_dialog() {
-    local function_name="show_dialog" default height=300 width=450 is_html=false message input_label style_name title="Message";
+    local function_name="show_dialog" default height=300 width=450 is_html=false message input_label style_name
+        title="Message" target_variable_name="";
     import_args "$@";
     echo "<FEEDBACK>";
     echo "ui interaction";
@@ -57,13 +58,26 @@ function show_dialog() {
     echo "$message";
     echo "</FEEDBACK>";
     wait_for_feedback;
-    LAST_DIALOG_RESULT="$LAST_RESULTS"; 
+    if [ -n "$target_variable_name" ]; then
+      eval "$target_variable_name='$LAST_RESULTS'";
+    else
+      LAST_DIALOG_RESULT="$LAST_RESULTS";
+    fi;
 }
 
-function get_user_input() {
+function get_user_input_v1() {
     BUTTONS=("Ok" "Cancel")
     BUTTON_LOCATIONS=("LEFT" "RIGHT")
     show_dialog "$@";
+}
+
+function get_user_input() {
+  local target_variable_name;
+  import_args "$@";
+  check_required_arguments "get_user_input" target_variable_name;
+  BUTTONS=("Ok" "Cancel")
+  BUTTON_LOCATIONS=("LEFT" "RIGHT")
+  show_dialog --target_variable_name "$target_variable_name" "$@";
 }
 
 function ask_yes_no() {

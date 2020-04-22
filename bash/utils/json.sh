@@ -185,48 +185,6 @@ function answer_form_interaction() {
     echo "</FEEDBACK>";
 }
 
-function create_json_instance() {
-    local function_name="create_json_instance" fields_json packet_guid parent_instance_id compile_container="false" execute_filename;
-    import_args "$@";
-    check_required_arguments $function_name fields_json packet_guid parent_instance_id compile_container;
-    local request="$(cat << EOF
-<FEEDBACK>
-{
-"requestType": "CREATE INSTANCE",
-"packetGuid": "$packet_guid",
-"parentInstanceId": "$parent_instance_id",
-"compileContainer": $compile_container,
-"fields": $fields_json
-}
-</FEEDBACK>
-EOF
-)";
-    echo "$request";
-    wait_for_feedback;
-    if [ "$LAST_STATUS" == "SUCCESS" -a -n "$execute_filename" ]; then
-        local instance_id="$(echo "$LAST_RESULTS" | jq -r '.dbId')";
-        execute_json_action --instance_id "$instance_id" --filename "$execute_filename";
-    fi;
-}
-
-function execute_json_action() {
-    local function_name="execute_json_action" instance_id filename;
-    import_args "$@";
-    check_required_arguments $function_name instance_id filename;
-    local request="$(cat << EOF
-<FEEDBACK>
-{
-"requestType": "EXECUTE ACTION",
-"instanceId": "$instance_id",
-"filename": "$filename"
-}
-</FEEDBACK>
-EOF
-)";
-    echo "$request";
-    wait_for_feedback;
-}
-
 function add_and_wrap_data_part() {
     local function_name=add_and_wrap_data_part full_json data_part_id data_json;
     import_args "$@";
