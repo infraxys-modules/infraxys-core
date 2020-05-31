@@ -1,4 +1,29 @@
 
+#Variable example: see README.md
+function load_git_config_variable() {
+    local git_config_variable set_global_config=false;
+    import_args "$@";
+    check_required_arguments "load_git_config_variable" git_config_variable;
+    local var_filename="/tmp/infraxys/variables/GIT-CONFIG/$git_config_variable";
+    log_info "Retrieving Git-config from $var_filename.";
+    github_domain="$(cat "$var_filename" | jq -r '.hostname')";
+    github_token="$(cat "$var_filename" | jq -r '.token')";
+    if [ "$set_global_config" == "true" ]; then
+        local global_config="$(cat "$var_filename" | jq -r '.config')";
+        if [ -n "$global_config" ]; then
+            for config in $(echo "$global_config" | jq -cr '.[]'); do
+                log_info "Processing 'config' element.";
+                local name="$(echo "$config" | jq -r '.name')";
+                local value="$(echo "$config" | jq -r '.value')";
+                if [ -n "$name" ]; then
+                    log_info "Setting global git config '$name' to '$value'.";
+                    git config --global $name "$value";
+                fi;
+            done;
+        fi;
+    fi;
+}
+
 function git_clone_repository() {
 	local github_domain github_token organization repository branch target_directory \
 	    git_config_variable sparse_path;
@@ -6,12 +31,9 @@ function git_clone_repository() {
 	check_required_argument "git_clone_repository" github_domain git_config_variable; # at least one of these two is required
 	check_required_arguments "git_clone_repository" organization repository branch;
 
-  if [ -n "$git_config_variable" ]; then
-    local var_filename="/tmp/infraxys/variables/GIT-CONFIG/$git_config_variable";
-    log_info "Retrieving Git-config from $var_filename.";
-    local github_domain="$(cat "$var_filename" | jq -r '.hostname')";
-    local github_token="$(cat "$var_filename" | jq -r '.token')";
-  fi;
+    if [ -n "$git_config_variable" ]; then
+      load_git_config_variable --git_config_variable "$git_config_variable";
+    fi;
 	if [ -z "$target_directory" ]; then
 		target_directory="/tmp/$repository_$branch";
 	fi;
@@ -36,9 +58,13 @@ function git_clone_repository() {
 }
 
 function create_github_team() {
-    local github_domain github_token organization team_name team_description;
+    local git_config_variable github_domain github_token organization team_name team_description;
     import_args "$@";
-    check_required_arguments "create_github_team" github_domain organization team_name team_description;
+    check_required_arguments "create_github_team" organization team_name team_description;
+    check_required_argument "create_github_team" github_domain git_config_variable;
+    if [ -n "$git_config_variable" ]; then
+      load_git_config_variable --git_config_variable "$git_config_variable";
+    fi;
     local github_rest_endpoint="https://$github_domain/api/v3";
     local auth_header="";
     if [ -n "$github_token" ]; then

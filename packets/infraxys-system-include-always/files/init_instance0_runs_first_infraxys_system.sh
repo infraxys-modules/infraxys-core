@@ -1,5 +1,7 @@
 export INSTANCE_GUID="$instance.getGuid()";
 export PACKET_GUID="$instance.getPacketGuid()";
+export PACKET_MODULE_BRANCH_PATH="$instance.getPacketModuleBranchPath()";
+
 #if ($instance.attributes)
 #foreach ($attribute in $instance.attributes)
 #if ($attribute.autoExportToScript == true)

@@ -1,5 +1,6 @@
 {
   "version": "1.0",
+  "id": "51baf532-f8c1-4936-9a1f-514391fe3766",
   "label": "%instance_label%",
   "type": "",
   "autoExpand": false,
@@ -10,6 +11,7 @@
   "infoHtml": "",
   "attributes": [
     {
+      "id": "1e31cd54-443b-4323-bf86-a106aa4c0e10",
       "name": "instance_label",
       "caption": "Instance label",
       "type": "java.lang.String",
@@ -20,9 +22,10 @@
       "required": true,
       "isPartOfKey": true,
       "listOfValues": "",
+      "cacheMinutes": 0,
       "referenceFilter": "",
       "referenceValueAttributeName": "",
-      "referenceChildGuidFilter": "",
+      "referenceChildIdFilter": "",
       "newItemsAllowed": false,
       "parseWithVelocity": false,
       "cloneAttribute": true,
@@ -34,7 +37,7 @@
   ],
   "files": [
     {
-      "guid": "84e3470e-33b2-40ad-ae62-4c04bc9e809f",
+      "id": "84e3470e-33b2-40ad-ae62-4c04bc9e809f",
       "filename": "packets.json",
       "includeName": "",
       "menuCaption": "packets.json",
@@ -53,7 +56,9 @@
       "menuSeparatorBefore": false,
       "hideFromInstanceActionsMenu": false,
       "hideFromBottomMenu": false,
-      "menuPath": ""
+      "menuPath": "",
+      "dockerImage": "",
+      "customCommand": ""
     }
   ],
   "allowedChildren": []

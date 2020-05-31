@@ -1,4 +1,6 @@
-export environment_name="$environment.name";
+export environment_name="$environment.getName()";
+export environment_guid="$environment.getGuid()";
+export environment_module_branch_path="$environment.getModuleBranchPath()";
 
 #set ($environmentVars = $environment.getEnvironmentVars())
 #foreach ($environmentVar in $environmentVars)

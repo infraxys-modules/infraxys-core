@@ -1,5 +1,5 @@
-export container_name="$container.name";
-export container_description="$container.description";
+export container_name="$container.getName()";
+export container_guid="$container.getGuid()";
 
 #foreach ($containerVar in $container.getContainerVars())
 export $containerVar.attributeName="$(cat << EOF

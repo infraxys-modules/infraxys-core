@@ -1,5 +1,6 @@
 {
   "version": "1.0",
+  "id": "9f83b047-aba4-4839-8884-8e8b135c1961",
   "label": "%instance_label%",
   "type": "",
   "autoExpand": false,
@@ -10,6 +11,7 @@
   "infoHtml": "",
   "attributes": [
     {
+      "id": "fe8a6e1f-5739-4e88-8d2c-9efe79a10517",
       "name": "always_enable_module",
       "caption": "always_enable_module",
       "type": "java.lang.Boolean",
@@ -20,9 +22,10 @@
       "required": true,
       "isPartOfKey": false,
       "listOfValues": "",
+      "cacheMinutes": 0,
       "referenceFilter": "",
       "referenceValueAttributeName": "",
-      "referenceChildGuidFilter": "",
+      "referenceChildIdFilter": "",
       "newItemsAllowed": false,
       "parseWithVelocity": false,
       "cloneAttribute": true,
@@ -32,6 +35,7 @@
       "defaultValue": "1"
     },
     {
+      "id": "de0d298c-f600-4550-a794-114abad46129",
       "name": "instance_label",
       "caption": "Instance label",
       "type": "java.lang.String",
@@ -45,7 +49,7 @@
       "cacheMinutes": 0,
       "referenceFilter": "",
       "referenceValueAttributeName": "",
-      "referenceChildGuidFilter": "",
+      "referenceChildIdFilter": "",
       "newItemsAllowed": false,
       "parseWithVelocity": false,
       "cloneAttribute": true,
@@ -57,7 +61,7 @@
   ],
   "files": [
     {
-      "guid": "15855193-6eb9-4017-ad1f-dba4400e4f06",
+      "id": "15855193-6eb9-4017-ad1f-dba4400e4f06",
       "filename": "init_instance0_runs_first_infraxys_system.sh",
       "menuCaption": "init_instance0_runs_first_infraxys_system.sh",
       "directory": "",
@@ -80,7 +84,7 @@
       "customCommand": ""
     },
     {
-      "guid": "56f23c5d-46b6-424f-a946-9da948077f1d",
+      "id": "56f23c5d-46b6-424f-a946-9da948077f1d",
       "filename": "instance_vars.auto_properties",
       "includeName": "",
       "menuCaption": "instance_vars.auto_properties",

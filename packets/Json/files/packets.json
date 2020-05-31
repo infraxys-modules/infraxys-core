@@ -4,19 +4,17 @@
 #macro (nvlJsonForNumber $valueOrNull $defaultIfNull)
 #if ($valueOrNull)$valueOrNull#else#if($defaultIfNull)$defaultIfNull#else#end#end
 #end
-#set ($allPackets = $environment.compilation.getAllPackets())
+#set ($allPackets = $environment.getAllPackets())
 {
     "packets": [
 #foreach ($packet in $allPackets)
     {
-        "dbId": $packet.id,
         "guid": "#nvlJson($packet.guid)",
         "name": "#nvlJson($packet.name)",
         "packetType": "#nvlJson($packet.packetType)",
         "attributes": [
 #foreach ($coreClassAttribute in $packet.coreClassAttributes)
         {
-            "dbId": $coreClassAttribute.id,
             "name": "#nvlJson($coreClassAttribute.name)",
             "caption": "#nvlJson($coreClassAttribute.captionKey)",
             "tooltip": "#nvlJson($coreClassAttribute.tooltip)",

@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "id": "107adff2-3051-4a35-b2de-1cf6303ee14c",
+  "roles": [],
+  "instances": [
+    {
+      "id": "guid-50424",
+      "packetId": "9f83b047-aba4-4839-8884-8e8b135c1961",
+      "packetName": "infraxys-system-include-always",
+      "packetPath": "github.com\\infraxys-modules\\infraxys-core\\master",
+      "velocityName": "",
+      "instanceGroups": "",
+      "attributes": [
+        {
+          "id": "fe8a6e1f-5739-4e88-8d2c-9efe79a10517",
+          "name": "always_enable_module",
+          "value": "1"
+        },
+        {
+          "id": "de0d298c-f600-4550-a794-114abad46129",
+          "name": "instance_label",
+          "value": " Infraxys - include in every instance files"
+        }
+      ]
+    },
+    {
+      "id": "guid-46352",
+      "packetId": "5ef3aa20-65a6-4e6c-8e9a-dbf40411791d",
+      "packetName": "infraxys-system",
+      "packetPath": "github.com\\infraxys-modules\\infraxys-core\\master",
+      "velocityName": "",
+      "instanceGroups": "",
+      "attributes": [
+        {
+          "id": "3e7482d9-256f-431b-bf5d-bbb3f06c091e",
+          "name": "always_enable_module",
+          "value": "1"
+        },
+        {
+          "id": "ed6e7bd8-d0ff-4237-8130-92c775afe0f2",
+          "name": "instance_label",
+          "value": " Infraxys - variable generators"
+        }
+      ]
+    }
+  ]
+}
