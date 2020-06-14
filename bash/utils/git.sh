@@ -5,7 +5,7 @@ function load_git_config_variable() {
     import_args "$@";
     check_required_arguments "load_git_config_variable" git_config_variable;
     local var_filename="/tmp/infraxys/variables/GIT-CONFIG/$git_config_variable";
-    log_info "Retrieving Git-config from $var_filename.";
+    log_info "Retrieving Git-config from $var_filename (set global config: $set_global_config).";
     github_domain="$(cat "$var_filename" | jq -r '.hostname')";
     github_token="$(cat "$var_filename" | jq -r '.token')";
     if [ "$set_global_config" == "true" ]; then
