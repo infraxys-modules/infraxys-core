@@ -69,6 +69,7 @@ function process_ssh_config_variables() {
 
         cd "$directory" > /dev/null;
         for f in *; do
+            echo "" >> ~/.ssh/config; # ensure new line
             log_info "Adding contents of file $f to ~/.ssh/config";
             cat "$f" >> ~/.ssh/config;
         done;

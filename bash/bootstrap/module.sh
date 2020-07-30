@@ -24,7 +24,7 @@ function enable_module() {
     local module_dir="$(get_module_directory --git_url "$git_url" --git_branch "$git_branch")";
     if [ "$ON_PROVISIONING_SERVER" == "true" ]; then
         if [ ! -d "$module_dir" ]; then
-            log_error "Module directory '$module_dir' doesn't exist. You need to add this module's branch on this provisioning server in Infraxys.";
+            log_error "Module directory '$module_dir' doesn't exist. Make sure it's available in Infraxys and that a depen.";
             exit 1;
         fi;
     fi;
