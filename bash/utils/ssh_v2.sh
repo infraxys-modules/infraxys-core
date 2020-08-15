@@ -51,11 +51,12 @@ function execute_function_over_ssh() {
       copy_file_to_host --hostname "$hostname" --source_path "$transfer_file" --target_path "$transfer_file_remote_path" \
           --create_directory "$create_directory";
     fi;
+    local - # set option locally
+    set +e;
     if [ "$in_background" == "true" ]; then
         $ssh_command "$typeset_command" &
         local last_exit_code="$?";
     else
-      #echo "executing $ssh_command $typeset_command";
       $ssh_command "$typeset_command";
       local last_exit_code="$?";
       if [ -n "$retrieve_file" ]; then
@@ -65,10 +66,9 @@ function execute_function_over_ssh() {
       fi;
     fi;
 
+    export LAST_SSH_EXIT_CODE="$last_exit_code";
     if [ "$last_exit_code" != "0" ] && [ "$exit_on_error" == "true" ]; then
     	exit $last_exit_code;
-    else
-    	return $last_exit_code;
     fi;
 }
 

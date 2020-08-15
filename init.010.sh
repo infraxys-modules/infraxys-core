@@ -2,6 +2,8 @@
 
 set -eo pipefail;
 
+export PYTHONPATH="$(pwd)/python:$PYTHONPATH";
+
 # This code must run after cloud provider configuration, like connecting to AWS (which is in init.005.sh)
 
 function init_ssh() {

@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "id": "5e47b93c-0a61-4073-ba94-09e5265dbccc",
+  "label": "infraxys_config_variable",
+  "type": "",
+  "class": "",
+  "autoExpand": false,
+  "skipEveryInstanceFiles": false,
+  "limitToAllowedChildren": false,
+  "autoGenerate": false,
+  "key": "",
+  "infoHtml": "",
+  "attributes": [
+    {
+      "id": "ce2ea596-dee7-4e08-a251-5081eca54044",
+      "name": "infraxys_server_config_variable",
+      "caption": "Infraxys config variable",
+      "type": "java.lang.String",
+      "formColumn": 1,
+      "formOrder": 1300,
+      "visibility": "ALWAYS VISIBLE",
+      "writability": "ALWAYS",
+      "required": false,
+      "isPartOfKey": false,
+      "listOfValues": "",
+      "cacheMinutes": 0,
+      "referenceFilter": "",
+      "referenceValueAttributeName": "",
+      "referenceChildIdFilter": "",
+      "newItemsAllowed": false,
+      "parseWithVelocity": false,
+      "inputPrompt": "",
+      "tooltip": "\u003cp\u003eEnter the Infraxys variable name of type \"INFRAXYS-CONFIG\" that should be used to execute REST-calls onto.\u003c/p\u003e",
+      "scope": "Instance",
+      "defaultValue": ""
+    }
+  ],
+  "files": [],
+  "allowedChildren": []
+}
