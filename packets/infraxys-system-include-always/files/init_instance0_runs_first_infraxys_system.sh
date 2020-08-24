@@ -4,12 +4,10 @@ export PACKET_MODULE_BRANCH_PATH="$instance.getPacketModuleBranchPath()";
 
 #if ($instance.attributes)
 #foreach ($attribute in $instance.attributes)
-#if ($attribute.autoExportToScript == true)
 export $attribute.name="$(cat << EOF
 $attribute.value
 EOF
 )";
-#end  
 #end
 #end 
 

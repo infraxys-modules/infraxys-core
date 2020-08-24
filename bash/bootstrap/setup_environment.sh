@@ -22,6 +22,17 @@ else
 : ${INFRAXYS_ROOT:=/tmp/infraxys/run_$$}; export INFRAXYS_ROOT;
 fi;
 
+tmp_path="/cache/project/bin";
+cd /cache/projects
+
+for f in $(find . -mindepth 1 -maxdepth 1 -type d -printf '%P\n'); do
+    log_info "Adding $f/bin to PATH."
+    tmp_path="$tmp_path:/cache/projects/$f/bin";
+done;
+
+export PATH="$tmp_path:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+mkdir -p "/cache/project/bin";
+
 cd "$MODULES_ROOT/github.com/infraxys-modules/infraxys-core/master/bash";
 
 for f in utils/*.sh; do
