@@ -23,12 +23,15 @@ else
 fi;
 
 tmp_path="/cache/project/bin";
-cd /cache/projects
 
-for f in $(find . -mindepth 1 -maxdepth 1 -type d -printf '%P\n'); do
-    log_info "Adding $f/bin to PATH."
-    tmp_path="$tmp_path:/cache/projects/$f/bin";
-done;
+if [ -d /cache/projects ]; then
+    cd /cache/projects
+
+    for f in $(find . -mindepth 1 -maxdepth 1 -type d -printf '%P\n'); do
+        log_info "Adding $f/bin to PATH."
+        tmp_path="$tmp_path:/cache/projects/$f/bin";
+    done;
+fi;
 
 export PATH="$tmp_path:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
 mkdir -p "/cache/project/bin";
