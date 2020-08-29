@@ -145,4 +145,30 @@ function should_run_parallel() {
     fi;
 }
 
+function wait_for_ssh() {
+	local function_name="wait_for_ssh_connection" hostname max_wait_seconds=300 exit_on_failure=true;
+	import_args "$@";
+	check_required_argument $function_name hostname;
+	local waited="false";
+	local started_at_second=$(date +%s)
+	local fail_at_second=$(expr started_at_second + max_wait_seconds);
+    log_info_no_cr "Waiting for ssh at $hostname..";
+	while ! ssh hostname; do
+	    waited="true";
+	    echo -n ".";
+        local current_second=$(date +%s);
+        if [ $current_second -gt $fail_at_second ]; then
+            echo ""; // force new line
+            if [ "$exit_on_failure" == "true" ]; then
+                log_fatal "Timeout waiting for SSH connection to $hostname.";
+            else
+                log_warn "Timeout waiting for SSH connection to $hostname.";
+                return;
+            fi;
+        fi;
+	done;
 
+	if [ "$waited" == "true" ]; then
+	    sleep 5; # wait a bit so that the SSH server is fully operational
+	fi;
+}

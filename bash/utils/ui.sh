@@ -1,15 +1,14 @@
 function show_message_dialog() {
-    local function_name="show_message_dialog" height=200 width=400 is_html=false message style_name title;
+    local function_name="show_message_dialog" height=200 width=400 is_html=false message style_name title async="false";
     import_args "$@";
     check_required_arguments $function_name message;
     show_dialog --height "$height" --width "$width" --is_html "$is_html" \
-            --message "$message" --style_name "$style_name" --title "$title";
-
+            --message "$message" --style_name "$style_name" --title "$title" --async "$async";
 }
 
 function show_dialog() {
     local function_name="show_dialog" default height=300 width=450 is_html=false message input_label style_name
-        title="Message" target_variable_name="";
+        title="Message" target_variable_name="" async="false";
     import_args "$@";
     echo "<FEEDBACK>";
     echo "ui interaction";
@@ -57,11 +56,16 @@ function show_dialog() {
 
     echo "$message";
     echo "</FEEDBACK>";
-    wait_for_feedback;
-    if [ -n "$target_variable_name" ]; then
-      eval "$target_variable_name='$LAST_RESULTS'";
+
+    if [ "$async" == "false" ]; then
+        wait_for_feedback;
+        if [ -n "$target_variable_name" ]; then
+          eval "$target_variable_name='$LAST_RESULTS'";
+        else
+          LAST_DIALOG_RESULT="$LAST_RESULTS";
+        fi;
     else
-      LAST_DIALOG_RESULT="$LAST_RESULTS";
+        log_info "Not waiting for an answer because argument 'async' is not 'false'.";
     fi;
 }
 
