@@ -35,23 +35,27 @@ class JsonForm(object):
 
         self.value_change_listeners[object_id].append(callback)
 
-    def add_data_part(self, key, list_items_attribute="items", data_part_json=None, data_part_file=None, data_part_url=None):
-        if data_part_file:
-            data_part_json = self.load_json_file(file=data_part_file)
-        elif data_part_url:
-            self.set_status("Retrieving json from {}.".format(data_part_url))
-            response = requests.get(url=data_part_url)
-            self.set_status("Json retrieved.")
-            data_part_json = response.json()
-
-        self.logger.info("Adding data part '{}'.".format(key))
+    def add_data_part(self, key, list_items_attribute="items", data_part_json=None, data_part_file=None, data_part_url=None,
+                      cached_filename=None):
 
         full_data_part_json = {
             "id": key,
             "listItemsAttribute": list_items_attribute,
-            "data":
-                data_part_json
         }
+
+        if data_part_file:
+            full_data_part_json.update({"data": self.load_json_file(file=data_part_file)})
+        elif data_part_url:
+            self.set_status("Retrieving json from {}.".format(data_part_url))
+            response = requests.get(url=data_part_url)
+            self.set_status("Json retrieved.")
+            full_data_part_json.update({"data": response.json()})
+        elif cached_filename:
+            full_data_part_json.update({"cachedFilename": cached_filename})
+
+        self.logger.info("Adding data part '{}'.".format(key))
+
+
 
         self.data_parts.append(full_data_part_json)
 
