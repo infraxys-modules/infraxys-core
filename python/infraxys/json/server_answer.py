@@ -73,3 +73,9 @@ class ServerAnswer(object):
                 json[result.id] = result.value
 
         return json
+
+    def get(self, field_name):
+        return self.get_form_fields()[field_name]
+
+    def get_boolean(self, field_name):
+        return self.get(field_name) == 'true'

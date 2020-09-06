@@ -45,6 +45,8 @@ class JsonForm(object):
 
         if data_part_file:
             full_data_part_json.update({"data": self.load_json_file(file=data_part_file)})
+        elif data_part_json:
+            full_data_part_json.update({"data": data_part_json})
         elif data_part_url:
             self.set_status("Retrieving json from {}.".format(data_part_url))
             response = requests.get(url=data_part_url)
@@ -82,12 +84,9 @@ class JsonForm(object):
         if event_data.event_type == "BUTTON_CLICK":
             if event_data.event_details in self.button_click_listeners:
                 for listener in self.button_click_listeners[event_data.event_details]:
-                    result = listener(event_data)
+                    listener(event_data)
 
-                    if result == False: # Only explicitly returning False will hold the form
-                        return False
-
-                return True
+                return False # don't close the window
             else:
                 self.json_window.close_with_error(
                     "No button_click_listeners defined for eventDetails '{}'".format(event_data.event_details))
@@ -181,3 +180,11 @@ class JsonForm(object):
         json.update({"value": value})
 
         Communicator.get_instance().send_synchronous(json=json)
+
+    def store_selected_items(self, object_id):
+        json = {
+            "requestType": "UI",
+            "subType": "STORE SELECTED ITEMS",
+            "objectId": object_id
+        }
+        return Communicator.get_instance().send_synchronous(json=json)

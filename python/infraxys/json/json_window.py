@@ -69,7 +69,6 @@ class JsonWindow(object):
                 if self.form_loaded_listener:
                     self.form_loaded_listener(event_data)
 
-                print("Continue waiting", flush=True)
                 Communicator.get_instance().wait_for_server(callback=self.answer_received)
                 return
 
