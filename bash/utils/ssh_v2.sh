@@ -158,7 +158,7 @@ function wait_for_ssh() {
 	    echo -n ".";
         local current_second=$(date +%s);
         if [ $current_second -gt $fail_at_second ]; then
-            echo ""; // force new line
+            echo ""; # force new line
             if [ "$exit_on_failure" == "true" ]; then
                 log_fatal "Timeout waiting for SSH connection to $hostname.";
             else

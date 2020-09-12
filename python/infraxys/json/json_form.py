@@ -23,6 +23,30 @@ class JsonForm(object):
         if self.form_file:
             self.form_json = JsonUtils.get_instance().load_from_file(form_file)
 
+    def get_form_component(self, component_class, component_id, columns=None):
+        if not columns: # we're at the root of the form-json
+            columns = self.form_json['form']['canvas']['columns']
+
+        for column in columns:
+            for component in column['components']:
+                if 'class' in component and 'id' in component and component['class'] == component_class \
+                        and component['id'] == component_id:
+                    return component
+
+    def get_table_headers(self, table_id, property_names_only=False):
+        table = self.get_form_component('JsonTable', table_id)
+        if not table:
+            raise Exception(f'Table with id {table_id} not found in this form')
+
+        if property_names_only:
+            properties = []
+            for header in table['headers']:
+                properties.append(header['property'])
+
+            return properties
+        else:
+            return table['headers']
+
     def add_button_click_listener(self, key, callback):
         if not key in self.button_click_listeners:
             self.button_click_listeners[key] = []
@@ -81,22 +105,26 @@ class JsonForm(object):
         return json
 
     def event(self, event_data):
-        if event_data.event_type == "BUTTON_CLICK":
-            if event_data.event_details in self.button_click_listeners:
-                for listener in self.button_click_listeners[event_data.event_details]:
-                    listener(event_data)
+        try:
+            if event_data.event_type == "BUTTON_CLICK":
+                if event_data.event_details in self.button_click_listeners:
+                    for listener in self.button_click_listeners[event_data.event_details]:
+                        listener(event_data)
 
-                return False # don't close the window
-            else:
-                self.json_window.close_with_error(
-                    "No button_click_listeners defined for eventDetails '{}'".format(event_data.event_details))
+                    return False # don't close the window
+                else:
+                    self.json_window.close_with_error(
+                        "No button_click_listeners defined for eventDetails '{}'".format(event_data.event_details))
 
-        elif event_data.event_type == "VALUE CHANGE":
-            if event_data.object_id in self.value_change_listeners:
-                for listener in self.value_change_listeners[event_data.object_id]:
-                    result = listener(event_data)
+            elif event_data.event_type == "VALUE CHANGE":
+                if event_data.object_id in self.value_change_listeners:
+                    for listener in self.value_change_listeners[event_data.object_id]:
+                        result = listener(event_data)
 
-            return False # Make sure the form doesn't close
+                return False # Make sure the form doesn't close
+        except Exception as e:
+            print('Exception while handling button click: ' + str(e), flush=True)
+            Communicator.get_instance().show_exception_dialog(exception=e, title="Exception occured")
 
         return True
 

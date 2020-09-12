@@ -48,17 +48,21 @@ class Communicator():
     def show_message(message, type):
         Communicator.get_instance()._show_message(message=message, type=type)
 
-    @staticmethod
-    def show_dialog(message, type="BUTTON_DIALOG", title='', is_html=False,
-                    default_value='', style_name='', default_button='', width=450,
-                    height=450, string_input_label=None):
-        Communicator.get_instance()._show_dialog(message=message, type=type, title=title, is_html=is_html,
-                                                  default_value=default_value, style_name=style_name,
-                                                  default_button=default_button, width=width, height=height,
-                                                  string_input_label=string_input_label)
+    def show_exception_dialog(self, exception, title, is_html=False, width='90%', height='90%'):
+        self.show_dialog(message=str(exception), title=title, is_html=is_html, width=width, height=height)
 
-    def _show_dialog(self, message, type="BUTTON_DIALOG", title='', is_html=False, default_value='',
-                     style_name='', default_button='', width=450, height=450, string_input_label=''):
+    def show_error_dialog(self, message, title, is_html=True, width='90%', height='90%'):
+        self.show_dialog(message=message, title=title, is_html=is_html, width=width, height=height)
+
+    def show_yes_no(self, message, title='', is_html=True, width=450, height=450):
+        buttons = [
+            {'label': 'Yes', 'id': 1},
+            {'label': 'No', 'id': 2}
+        ]
+        result = self.show_dialog(message=message, title=title, is_html=is_html, width=width, height=height, buttons=buttons)
+        return (result == "1")
+
+    def show_dialog(self, message, title='', is_html=True, width=450, height=450, buttons=[{'label': 'OK', 'id': 1}]):
         json = {
             "requestType": "UI",
             "subType": "SHOW DIALOG",
@@ -66,9 +70,10 @@ class Communicator():
             "message": message,
             "title": title,
             "width": width,
-            "height": height
+            "height": height,
+            "buttons": buttons
         }
-        self.send_synchronous(json, return_on_first_answer=True)
+        return self.send_synchronous(json, return_on_first_answer=True)
 
     def _show_message(self, message, type):
         json = {
