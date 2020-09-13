@@ -1,4 +1,5 @@
 import requests
+import traceback
 from infraxys.communicator import Communicator
 from infraxys.logger import Logger
 from infraxys.json.json_window import JsonWindow
@@ -80,10 +81,31 @@ class JsonForm(object):
             full_data_part_json.update({"cachedFilename": cached_filename})
 
         self.logger.info("Adding data part '{}'.".format(key))
-
-
-
         self.data_parts.append(full_data_part_json)
+        return full_data_part_json
+
+    def set_data_part(self, key, list_items_attribute="items", data_part_json=None, data_part_file=None, data_part_url=None,
+                      cached_filename=None):
+
+        for data_part in self.data_parts:
+            if data_part['id'] == key:
+                self.data_parts.remove(data_part)
+
+        full_data_part_json = self.add_data_part(key, list_items_attribute, data_part_json, data_part_file, data_part_url, cached_filename )
+
+        json = {
+            "requestType": "UI",
+            "subType": "UPDATE DATA PART",
+            "objectId": key,
+        }
+
+        if data_part_json:
+            json.update({"data": data_part_json})
+        else:
+            json.update({"cachedFilename": cached_filename})
+
+
+        Communicator.get_instance().send_synchronous(json=json)
 
     def load_json_file(self, file):
         return JsonUtils.get_instance().load_from_file(file)
@@ -123,6 +145,7 @@ class JsonForm(object):
 
                 return False # Make sure the form doesn't close
         except Exception as e:
+            traceback.print_exc()
             print('Exception while handling button click: ' + str(e), flush=True)
             Communicator.get_instance().show_exception_dialog(exception=e, title="Exception occured")
 
@@ -174,9 +197,6 @@ class JsonForm(object):
         for field_name in fields:
             real_id = field_name[0: len(field_name) - len(field_id_suffix)]
             into[real_id] = fields[field_name]
-
-    def set_data_part(self, element_id, json_data_part):
-        Communicator.get_instance().set_data_part(element_id=element_id, json_data_part=json_data_part)
 
     def set_status(self, message):
         Communicator.set_status(message)
