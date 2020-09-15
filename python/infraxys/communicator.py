@@ -84,6 +84,16 @@ class Communicator():
         }
         self.send_synchronous(json, return_on_first_answer=True)
 
+    def download_file(self, cached_filename, download_filename, label):
+        json = {
+            "requestType": "UI",
+            "subType": "DOWNLOAD FILE",
+            "cachedFilename": cached_filename,
+            "downloadFilename": download_filename,
+            "label": label
+        }
+        Communicator.get_instance().send_asynchronous(json=json)
+
     def set_status(message):
         Communicator.get_instance()._set_status(message=message)
 
