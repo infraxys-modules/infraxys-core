@@ -4,7 +4,7 @@
 # @author jeroen-manders
 #
 
-BASH_EXPORTED_FUNCTION_NAMES="import_args replace_spaces function_exists update_line_in_file remove_lines_in_file_that_start_with block_in_file file_contains_pattern";
+BASH_EXPORTED_FUNCTION_NAMES="import_args replace_spaces function_exists update_line_in_file remove_lines_in_file_that_start_with block_in_file file_contains_pattern set_os_variables";
 
 function import_args() {
 	local varvalue="";

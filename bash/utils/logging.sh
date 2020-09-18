@@ -4,7 +4,7 @@
 # @author jmanders
 #
 
-LOGGING_EXPORTED_FUNCTION_NAMES="confirm_or_abort log_trace log_debug log_info log_info_no_cr log_warn log_error log_fatal log_text";
+LOGGING_EXPORTED_FUNCTION_NAMES="confirm_or_abort log_trace log_debug log_info log_info_no_cr log_warn log_error log_fatal log_text show_error";
 
 function confirm_or_abort() {
     local function_name="ask_confirmation" message expected_answer="y";
