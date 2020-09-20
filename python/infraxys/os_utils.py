@@ -1,6 +1,7 @@
 from infraxys.logger import Logger
 import subprocess
 import os
+import sys
 
 
 class OsUtils(object):
@@ -29,3 +30,16 @@ class OsUtils(object):
         stderr_result = process.communicate()[1].decode()
         exitcode = process.returncode
         return exitcode, stdout_result, stderr_result
+
+    @staticmethod
+    def ensure_dir(path, extra_dir=None, exit_on_error=True):
+        if not os.path.exists(path):
+            try:
+                os.mkdir(path)
+            except Exception as e:
+                print(e)
+                if exit_on_error:
+                    sys.exit(1)
+
+        if extra_dir:
+            OsUtils.ensure_dir(f'{path}/{extra_dir}', exit_on_error=exit_on_error)

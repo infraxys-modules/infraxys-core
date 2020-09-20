@@ -229,10 +229,12 @@ class JsonForm(object):
 
         Communicator.get_instance().send_synchronous(json=json)
 
-    def store_selected_items(self, object_id):
+    # selected_rows_only: if true, only the items explicitly selected will be used, otherwise all (filtered) rows
+    def store_selected_items(self, object_id, selected_rows_only=False):
         json = {
             "requestType": "UI",
             "subType": "STORE SELECTED ITEMS",
-            "objectId": object_id
+            "objectId": object_id,
+            "selectedRowsOnly": selected_rows_only
         }
         return Communicator.get_instance().send_synchronous(json=json)
