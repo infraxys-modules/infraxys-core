@@ -80,30 +80,6 @@
       "menuPath": "",
       "dockerImage": "",
       "customCommand": ""
-    },
-    {
-      "id": "56f23c5d-46b6-424f-a946-9da948077f1d",
-      "filename": "instance_vars.auto_properties",
-      "includeName": "",
-      "menuCaption": "instance_vars.auto_properties",
-      "directory": "",
-      "runsIndependent": false,
-      "runsParallel": false,
-      "runBeforeIndependentActions": false,
-      "parseWithVelocity": true,
-      "executable": false,
-      "saveWith": "CURRENT INSTANCE",
-      "isInteractive": false,
-      "hideRunnerWindow": false,
-      "timeoutSeconds": 3600,
-      "key": "",
-      "menuOrder": 100,
-      "menuSeparatorBefore": false,
-      "hideFromInstanceActionsMenu": false,
-      "hideFromBottomMenu": false,
-      "menuPath": "",
-      "dockerImage": "",
-      "customCommand": ""
     }
   ],
   "allowedChildren": []
