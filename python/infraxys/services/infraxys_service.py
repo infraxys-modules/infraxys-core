@@ -4,6 +4,7 @@ from infraxys.communicator import Communicator
 from infraxys.exceptions import NotFoundException
 from infraxys.infraxys_rest_client import InfraxysRestClient
 from infraxys.model.base_object import BaseObject
+from infraxys.model.packet import Packet
 from infraxys.services.base_service import BaseService
 from ..json.instance_reference import InstanceReference
 
@@ -76,6 +77,9 @@ class InfraxysService(BaseService):
         else:
             instance = target_class(instance_reference=instance_reference)
 
+        attributes = []
+        self._load_attribute_values(add_to_attributes=attributes, instance=instance, packet=instance.get_packet())
+
         if 'attributes' in instance_json:
             attributes_json = instance_json['attributes']
             #self.logger.info(f'Creating instance of class {target_class}')
@@ -102,16 +106,7 @@ class InfraxysService(BaseService):
         }
 
         attributes = []
-        for attribute in packet.attributes:
-            value = None
-            if hasattr(instance, attribute.name):
-                value = instance.__getattribute__(attribute.name)
-
-            attributes.append({
-                "id": attribute.id,
-                "name": attribute.name,
-                "value": value
-            })
+        self._load_attribute_values(add_to_attributes=attributes, instance=instance, packet=packet)
 
         if instance.instance_reference:  # existing instance
             instance_body.update({
@@ -149,6 +144,32 @@ class InfraxysService(BaseService):
             raise Exception(message)
 
         return response
+
+    def _load_attribute_values(self, add_to_attributes, instance, packet):
+        for attribute in packet.attributes:
+            value = None
+            if hasattr(instance, attribute.name):
+                value = instance.__getattribute__(attribute.name)
+
+            add_to_attributes.append({
+                "id": attribute.id,
+                "name": attribute.name,
+                "value": value
+            })
+
+        for packet_extend in packet.packet_extends:
+            self._load_attribute_values(add_to_attributes, instance, self.get_packet(packet_extend))
+
+    def get_packet(self, packet_extend):
+        path = packet_extend.module_branch_path.replace('\\', '/')
+        if not path in Packet.instances_by_path:
+            packet_directory=f'/tmp/infraxys/modules/{path}/packets/{packet_extend.name}'
+            self.logger.info('Retrieving extended packet from: ' + packet_directory)
+            json_file = f'{packet_directory}/packet.json'
+            packet = Packet(json_file)
+            Packet.instances_by_path[path] = packet
+
+        return Packet.instances_by_path[path]
 
     @staticmethod
     def add_action_error(code, message):
