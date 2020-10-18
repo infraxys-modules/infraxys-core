@@ -9,26 +9,49 @@ class OsUtils(object):
     logger = Logger.get_logger("OsUtils")
 
     @staticmethod
-    def run_command(command_line, workdir=None, hide_stdout=False, hide_stderr=False):
-        OsUtils.logger.debug('command_line: ' + command_line)
+    def run_command_over_ssh(hostname, command_line, workdir=None, hide_stdout=False, hide_stderr=False, exit_on_error=False, log_command=True):
+        return OsUtils.run_command(f'ssh -k {hostname}', command_line, workdir, hide_stdout, hide_stderr, exit_on_error)
+
+    def run_command(command_line, arguments=None, workdir=None, hide_stdout=False, hide_stderr=False,
+                    exit_on_error=False, log_command=True, string_for_stdin=None):
+        if log_command:
+            if arguments:
+                OsUtils.logger.debug(f'command_line: {command_line}')
+            else:
+                OsUtils.logger.debug(f'command_line: {command_line}')
+
         command_parts = command_line.split()
+        if arguments:
+            command_parts.append(arguments)
+
         if workdir:
             os.chdir(workdir)
 
         stdout = subprocess.PIPE
         stderr = subprocess.PIPE
+        stdin = subprocess.PIPE
+        #stdin = subprocess.PIPE if string_for_stdin else None
 
-        if hide_stdout or hide_stdout:
+        if hide_stdout or hide_stderr:
             dev_null = open(os.devnull, 'w')
             if hide_stdout:
                 stdout = dev_null
             if hide_stderr:
                 stderr = dev_null
 
-        process = subprocess.Popen(command_parts, stdout=stdout, stderr=stderr)
-        stdout_result = process.communicate()[0].decode()
+        process = subprocess.Popen(command_parts, stdout=stdout, stderr=stderr, stdin=stdin)
+        if string_for_stdin:
+            stdout_result = process.communicate(input=str.encode(string_for_stdin))[0].decode()
+        else:
+            stdout_result = process.communicate()[0].decode()
+
         stderr_result = process.communicate()[1].decode()
         exitcode = process.returncode
+
+        if exitcode != 0 and exit_on_error:
+            OsUtils.logger.error(f'Exit code {exitcode} {stdout_result} {stderr_result}')
+            sys.exit(1)
+
         return exitcode, stdout_result, stderr_result
 
     @staticmethod
