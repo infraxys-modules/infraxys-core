@@ -22,7 +22,8 @@ class InfraxysService(BaseService):
         assert target_class or target_instance
         json_body = instance_reference.to_rest_get_json()
         try:
-            response = InfraxysRestClient.get_instance().execute_get(path='instances', json_body=json_body)
+            response = InfraxysRestClient.get_instance().execute_get(
+                path='instances', json_body=json_body)
         except NotFoundException as e:
             self.logger.info(f'No instance was found with {json_body}')
             raise e
@@ -45,7 +46,8 @@ class InfraxysService(BaseService):
         # print(json_response)
         if 'instance' in json_response:
             instance_json = json_response['instance']
-            result = self._get_instance_from_instance_json(instance_json, target_class, target_instance)
+            result = self._get_instance_from_instance_json(
+                instance_json, target_class, target_instance)
             return result
 
         return None
@@ -56,12 +58,14 @@ class InfraxysService(BaseService):
             'packetType': packet_type,
             'recursive': recursive
         })
-        response = InfraxysRestClient.get_instance().execute_get(path='instances/byPacketType', json_body=json_body)
+        response = InfraxysRestClient.get_instance().execute_get(
+            path='instances/byPacketType', json_body=json_body)
         json_response = json.loads(response.content.decode('utf-8'))
         results = []
         if 'instances' in json_response:
             for instance_json in json_response['instances']:
-                instance = self._get_instance_from_instance_json(instance_json, target_class)
+                instance = self._get_instance_from_instance_json(
+                    instance_json, target_class)
                 results.append(instance)
 
         return results
@@ -78,7 +82,8 @@ class InfraxysService(BaseService):
             instance = target_class(instance_reference=instance_reference)
 
         attributes = []
-        self._load_attribute_values(add_to_attributes=attributes, instance=instance, packet=instance.get_packet())
+        self._load_attribute_values(
+            add_to_attributes=attributes, instance=instance, packet=instance.get_packet())
 
         if 'attributes' in instance_json:
             attributes_json = instance_json['attributes']
@@ -87,18 +92,21 @@ class InfraxysService(BaseService):
             for attribute_json in attributes_json:
                 attribute_name = attribute_json['name']
                 if hasattr(instance, attribute_name):
-                    instance.__setattr__(attribute_name, attribute_json['value'])
+                    instance.__setattr__(
+                        attribute_name, attribute_json['value'])
                 else:
-                    self.logger.debug(f'Python class doesn\'t have attribute {attribute_name}')
+                    self.logger.debug(
+                        f'Python class doesn\'t have attribute {attribute_name}')
 
         return instance
 
     def save(self, instance):
         assert isinstance(instance, BaseObject)
         assert instance.instance_reference or instance.parent_instance_reference \
-               or (instance.parent_instance and instance.parent_instance.instance_reference)
+            or (instance.parent_instance and instance.parent_instance.instance_reference)
 
-        packet = instance.get_packet()  # PacketService.get_instance().get_packet(for_instance=instance)
+        # PacketService.get_instance().get_packet(for_instance=instance)
+        packet = instance.get_packet()
         assert packet
         instance_body = {
             "packetId": packet.id,
@@ -106,7 +114,8 @@ class InfraxysService(BaseService):
         }
 
         attributes = []
-        self._load_attribute_values(add_to_attributes=attributes, instance=instance, packet=packet)
+        self._load_attribute_values(
+            add_to_attributes=attributes, instance=instance, packet=packet)
 
         if instance.instance_reference:  # existing instance
             instance_body.update({
@@ -135,12 +144,14 @@ class InfraxysService(BaseService):
 
         # print(json_body)
         # print('---------------')
-        response = InfraxysRestClient.get_instance().execute_post(path='instances', json_body=json_body)
+        response = InfraxysRestClient.get_instance().execute_post(
+            path='instances', json_body=json_body)
         json_object = json.loads(response.content.decode('utf-8'))
 
         # print(json_object)
         if "status" in json_object and json_object["status"] == "FAILED":
-            message = 'Error creating instance: {}'.format(json_object["message"])
+            message = 'Error creating instance: {}'.format(
+                json_object["message"])
             raise Exception(message)
 
         return response
@@ -158,13 +169,15 @@ class InfraxysService(BaseService):
             })
 
         for packet_extend in packet.packet_extends:
-            self._load_attribute_values(add_to_attributes, instance, self.get_packet(packet_extend))
+            self._load_attribute_values(
+                add_to_attributes, instance, self.get_packet(packet_extend))
 
     def get_packet(self, packet_extend):
         path = packet_extend.module_branch_path.replace('\\', '/')
         if not path in Packet.instances_by_path:
-            packet_directory=f'/tmp/infraxys/modules/{path}/packets/{packet_extend.name}'
-            self.logger.info('Retrieving extended packet from: ' + packet_directory)
+            packet_directory = f'/tmp/infraxys/modules/{path}/packets/{packet_extend.name}'
+            self.logger.info(
+                'Retrieving extended packet from: ' + packet_directory)
             json_file = f'{packet_directory}/packet.json'
             packet = Packet(json_file)
             Packet.instances_by_path[path] = packet
